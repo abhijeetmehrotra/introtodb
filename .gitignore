@@ -17,3 +17,4 @@ htmlcov
 .coverage
 .coverage.*
 *,cover
+db_credentials.json
