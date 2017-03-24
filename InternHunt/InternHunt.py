@@ -19,6 +19,9 @@ from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
 
+import studentend
+
+
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
@@ -195,11 +198,16 @@ def login():
 
 
 
-@app.route('/studentlogin')
+@app.route('/student/login', methods=["GET"])
 def studentlogin():
+  return render_template("studentlogin.html")
+
+
+@app.route('/student/verfify', methods=["POST"])
+def verify_student():
   username = request.form["username"]
   password = request.form["password"]
-  authenticate_user(username,password)
+  authenticate_user(username,password, g.conn)
 
 
 
