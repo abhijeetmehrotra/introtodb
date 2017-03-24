@@ -193,6 +193,34 @@ def add():
 def login():
     pass
 
+
+
+@app.route('/studentlogin')
+def studentlogin():
+  username = request.form["username"]
+  password = request.form["password"]
+  authenticate_user(username,password)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
   import click
 
