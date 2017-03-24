@@ -15,15 +15,19 @@ Read about it online.
 """
 
 import os, json
+
+from flask.ext.login import *
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
 
-import studentend
+import studentend, recruiterend
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+# login_manager = LoginManager()
 app = Flask(__name__, template_folder=tmpl_dir)
+# login_manager.init_app(app)
 
 
 #
@@ -207,23 +211,19 @@ def studentlogin():
 def verify_student():
   username = request.form["username"]
   password = request.form["password"]
-  authenticate_user(username,password, g.conn)
+  studentend.authenticate_user(username,password, g.conn)
 
 
+@app.route('/recruiter/login', methods=["GET"])
+def recruiterlogin():
+  return render_template("recruiterlogin.html")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+@app.route('/recruiter/login', methods=["POST"])
+def verify_recruiter():
+  if request.method == 'POST':
+    username = request.form['username']
+    password = request.form['password']
+    recruiterend.authenticate_recruiter(username, password, g.conn)
 
 
 
@@ -252,7 +252,7 @@ if __name__ == "__main__":
 
     HOST, PORT = host, port
     print "running on %s:%d" % (HOST, PORT)
-    app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
+    app.run(host=HOST, port=PORT, debug=debug, threaded=threaded, use_reloader=true)
 
 
   run()
