@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Intern Hunt</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Dashboard</a></li>
+        <li><a href="jobs">Jobs</a></li>
+      </ul>
+        <ul class="nav navbar-nav navbar-right">
+      <li><a href="profile"><span class="glyphicon glyphicon-user"></span>Profile</a></li>
+      <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+    </ul>
+    </div>
+  </div>
+</nav>
+
+<h2>Your Current Applications</h2>
+<div class="container-fluid">
+<table class="table table-striped">
+    <tr>
+        <th>Company</th>
+        <th>Position</th>
+        <th>Resume</th>
+        <th>Application Status</th>
+    </tr>
+    {% for n in data %}
+    <tr>
+        <td>
+            {{ n.company_name }}
+        </td>
+        <td>
+            {{ n.type }}
+        </td>
+        <td>
+            <a href="{{ n.resume}}"><u>Download</u></a>
+        </td>
+        <td>
+            {% if n.status == "PENDING" %}
+                <span class="text-primary"><b> {{ n.status }} </b></span>
+            {% elif n.status == "ACCEPT" %}
+                <span class="text-success"><b> {{ n.status }} </b></span>
+            {% else %}
+                <span class="text-danger"><b> {{ n.status }}</b></span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+
+</body>
+</html>

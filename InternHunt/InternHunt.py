@@ -19,7 +19,7 @@ from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
 
-import studentend
+from studentend import user_authenticate, get_applications, get_jobpositions
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -198,35 +198,60 @@ def login():
 
 
 
-@app.route('/student/login', methods=["GET"])
+@app.route('/student/login', methods=["GET,POST"])
 def studentlogin():
-  return render_template("studentlogin.html")
+  if request.method == "GET":
+    return render_template("studentlogin.html")
+  elif request.method == "POST":
+    username = request.form["username"]
+    password = request.form["password"]
+    is_authenticated = user_authenticate(username, password, g.conn)
+    return render_template("studentdashboard.html")
 
+@app.route('/student/dashboard', methods=["GET"])
+def studentdashboard():
+  userid = "1"
+  applications = get_applications(userid, g.conn)
+  print applications
+  context = dict(data=applications)
+  return render_template("studentdashboard.html", **context)
 
-@app.route('/student/verfify', methods=["POST"])
-def verify_student():
-  username = request.form["username"]
-  password = request.form["password"]
-  authenticate_user(username,password, g.conn)
+valid_sorting = ["position", "company", "startdate"]
 
+@app.route('/student/profile', methods=["GET","POST"])
+def studentprofile():
+    if request.method == "GET":
+        #getprofile
+        profile = None
+        context = dict(data=profile)
+        return render_template("studentprofile.html",**context)
+        pass
+    elif request.method == "POST":
+        pass
 
+@app.route('/student/jobs', methods=["GET"])
+def studentgetopenjobs():
+    sortby = request.args.get('sortby')
+    if sortby in valid_sorting:
+        jobpositions = get_jobpositions(g.conn, sortby)
+    else:
+        jobpositions = get_jobpositions(g.conn)
+    print jobpositions
+    context = dict(data=jobpositions)
+    return render_template("studentjobpositions.html", **context)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@app.route('/student/apply', methods=["GET","POST"])
+def studentapply():
+    if request.method == "GET":
+        pid = request.args.get('pid')
+        if pid is not None:
+            data = {"pid":int(pid)}
+            context = dict(data=data)
+            return render_template("studentapply.html", **context)
+        else:
+            return redirect("jobs")
+    elif request.method == "POST":
+        pass
 
 
 if __name__ == "__main__":
@@ -252,7 +277,8 @@ if __name__ == "__main__":
 
     HOST, PORT = host, port
     print "running on %s:%d" % (HOST, PORT)
-    app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
+
+    app.run(host=HOST, port=PORT, debug=debug, threaded=threaded, use_reloader=True)
 
 
   run()
