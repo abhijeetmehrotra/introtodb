@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create job</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Intern Hunt</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid" style="width: 90%">
+    <h3>Create position</h3>
+<form method="post" action="">
+    <p>Position Title: <input type="text" name="Title" placeholder="Enter title" required /><br>
+    <p>Position Description: <textarea id="description" rows ="3" cols="80" maxlength="500"></textarea><br>
+    <p>From Date: <input type="date" name="fromDate" required /><br>
+    <p>To Date: <input type="date" name="toDate" required /><br>
+    <br>
+    <input type="submit" value="Post" class="btn btn-primary">
+</form>
+</div>
+
+</body>
+</html>
