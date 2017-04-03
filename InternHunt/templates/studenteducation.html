@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile</title>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="application/javascript">
+
+        function deleteEducation(university, degree, major, fromdate, sid) {
+            parameters = {
+                'university': university,
+                'degree':degree,
+                'major':major,
+                'fromdate':fromdate,
+                'sid':sid
+            };
+            var promise = new Promise(function (success, failure) {
+                $.ajax({
+                    url: 'deleteeducation',
+                    type: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify(parameters),
+                    success: function (data) {
+                        location.reload();
+                    },
+                    error: function (data) {
+                        console.log(data.responseText);
+                    }
+                })
+            });
+        }
+
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Intern Hunt</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li><a href="dashboard">Dashboard</a></li>
+        <li><a href="jobs">Jobs</a></li>
+      </ul>
+        <ul class="nav navbar-nav navbar-right">
+      <li class="active"><a href="#"><span class="glyphicon glyphicon-user"></span>Profile</a></li>
+      <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+    </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid" style="width: 95%">
+{% for education in data %}
+<div style="margin: 8px; padding: 12px; background: #efefef">
+            <div class="row">
+                <div class="col-sm-6">
+                    University: <span class="text-primary"><b>{{ education.university }}</b></span>
+                </div>
+                <div class="col-sm-5">
+                    Degree-Major: <span class="text-info"><b>{{ education.degree }} {{ education.major }}</b></span>
+                </div>
+                <div class="col-sm-1">
+                    <input class="btn btn-danger" type="button" value="Delete" onclick="deleteEducation('{{ education.university}}', '{{ education.degree}}','{{ education.major}}', '{{education.fromdate}}', '{{education.stu_sid}}')" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
+                </div>
+                <div class="col-sm-6">
+                    To: <span class="text-info"><b>{{ education.todate }}</b></span>
+                </div>
+            </div>
+    <br>
+            <div class="row">
+                <div class="col-sm-12">
+                    Description:
+                    {{ education.description }}
+                </div>
+            </div>
+</div>
+{% endfor %}
+
+<div style="margin: 8px; padding: 12px;">
+    <h3>Enter your education</h3>
+    <form action="education" method="POST">
+        University: <input name="university" type="text" required/></br>
+        Degree: <input name="degree" type="text" required ></br>
+        Major: <input name="major" type="text" required></br>
+        From: <input name="fromdate" type="text" required>(Format: yyyy-mm-dd)</br>
+        To: <input name="todate" type="text">(Format: yyyy-mm-dd)</br>
+        Description: <input name="description" type="textarea"></br>
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
+</div>
+
+</body>
+
+</html>

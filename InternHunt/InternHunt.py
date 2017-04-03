@@ -20,6 +20,7 @@ from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
 
 from studentend import user_authenticate, get_applications, get_jobpositions
+from studentend import get_student_education, delete_education, add_education
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -196,8 +197,6 @@ def add():
 def login():
     pass
 
-
-
 @app.route('/student/login', methods=["GET,POST"])
 def studentlogin():
   if request.method == "GET":
@@ -218,16 +217,33 @@ def studentdashboard():
 
 valid_sorting = ["position", "company", "startdate"]
 
-@app.route('/student/profile', methods=["GET","POST"])
+@app.route('/student/profile/education', methods=["GET","POST"])
 def studentprofile():
+    userid = "1"
     if request.method == "GET":
-        #getprofile
-        profile = None
-        context = dict(data=profile)
-        return render_template("studentprofile.html",**context)
-        pass
+        studenteducation = get_student_education(userid, g.conn)
+        context = dict(data=studenteducation)
+        return render_template("studenteducation.html", **context)
     elif request.method == "POST":
-        pass
+        university = request.form['university']
+        degree = request.form['degree']
+        major = request.form['major']
+        fromdate = request.form['fromdate']
+        todate = request.form['todate']
+        description = request.form['description']
+        sid = "1"
+        add_education(university, degree, major, fromdate, todate, description, sid, g.conn)
+        return redirect('/student/profile/education')
+
+@app.route('/student/profile/deleteeducation', methods=["POST"])
+def deleteeducation():
+    university = request.json['university']
+    degree = request.json['degree']
+    major = request.json['major']
+    fromdate = request.json['fromdate']
+    sid = request.json['sid']
+    delete_education(university, degree, major, fromdate, sid, g.conn)
+    return ('DELETED', 200)
 
 @app.route('/student/jobs', methods=["GET"])
 def studentgetopenjobs():
