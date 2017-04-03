@@ -225,9 +225,42 @@ def verify_recruiter():
     password = request.form['password']
     recruiterend.authenticate_recruiter(username, password, g.conn)
 
+@app.route('/recruiter/createjob', methods=["GET"])
+def createjobrender():
+  return render_template("createapplication.html")
 
+@app.route('/recruiter/createjob', methods=["POST"])
+def create_job():
+  title = request.form["title"]
+  description = request.form["description"]
+  fromDate = request.form["fromDate"]
+  toDate = request.form["toDate"]
+  print (title, description, fromDate, toDate)
 
+@app.route('/recruiter/viewjobs', methods=["GET"])
+def viewjobs():
+    jobpositions = get_jobs(g.conn, 'fromdate', )
+    print jobpositions
+    context = dict(data=jobpositions)
+    return render_template("viewapplication.html", **context)
 
+def get_jobs(conn, sortby):
+    openjobpositions = []
+    closedjobpositions = []
+    if sortby is not None:
+        sorting_type = sortby
+        query1 = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='OPEN' and hr_hid = 1 ORDER BY "+sorting_type
+        cursor1 = conn.execute(query1)
+        query2 = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='CLOSED' and hr_hid = 1 ORDER BY " + sorting_type
+        cursor2 = conn.execute(query2)
+    else:
+        cursor1 = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='OPEN' and hr_hid = 1")
+        cursor2 = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='CLOSED' and hr_hid = 1")
+    for row in cursor1:
+        openjobpositions.append(dict(row))
+    for row in cursor2:
+        closedjobpositions.append(dict(row))
+    return {'openpositions':openjobpositions, 'closedpositions':closedjobpositions}
 
 if __name__ == "__main__":
   import click
