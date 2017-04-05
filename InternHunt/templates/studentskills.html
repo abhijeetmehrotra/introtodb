@@ -10,17 +10,14 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="application/javascript">
 
-        function deleteEducation(university, degree, major, fromdate, sid) {
+        function deleteSkill(skill, sid) {
             parameters = {
-                'university': university,
-                'degree':degree,
-                'major':major,
-                'fromdate':fromdate,
+                'skill': skill,
                 'sid':sid
             };
             var promise = new Promise(function (success, failure) {
                 $.ajax({
-                    url: 'deleteeducation',
+                    url: 'deleteskill',
                     type: 'POST',
                     contentType: "application/json",
                     data: JSON.stringify(parameters),
@@ -48,9 +45,9 @@
         <li><a href="/student/jobs">Jobs</a></li>
       </ul>
         <ul class="nav navbar-nav navbar-right">
-      <li class="active"><a href="#">Education</a></li>
+      <li><a href="education">Education</a></li>
       <li><a href="experience">Experience</a></li>
-      <li><a href="skills">Skills</a></li>
+      <li class="active"><a href="#">Skills</a></li>
       <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
     </ul>
     </div>
@@ -58,46 +55,27 @@
 </nav>
 
 <div class="container-fluid" style="width: 95%">
-{% for education in data %}
+{% for skills in data %}
 <div style="margin: 8px; padding: 12px; background: #efefef">
             <div class="row">
                 <div class="col-sm-6">
-                    University: <span class="text-primary"><b>{{ education.university }}</b></span>
+                    Skill: <span class="text-primary"><b>{{ skills.skill_name }}</b></span>
                 </div>
                 <div class="col-sm-5">
-                    Degree-Major: <span class="text-info"><b>{{ education.degree }} {{ education.major }}</b></span>
+                    Proficiency: <span class="text-info"><b>{{ skills.proficiency }}</b></span>
                 </div>
                 <div class="col-sm-1">
-                    <input class="btn btn-danger" type="button" value="Delete" onclick="deleteEducation('{{ education.university}}', '{{ education.degree}}','{{ education.major}}', '{{education.fromdate}}', '{{education.stu_sid}}')" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
-                </div>
-                <div class="col-sm-6">
-                    To: <span class="text-info"><b>{{ education.todate }}</b></span>
-                </div>
-            </div>
-    <br>
-            <div class="row">
-                <div class="col-sm-12">
-                    Description:</br>
-                    {{ education.description }}
+                    <input class="btn btn-danger" type="button" value="Delete" onclick="deleteSkill('{{ skills.skill_name}}', '{{skills.stu_sid}}')" />
                 </div>
             </div>
 </div>
 {% endfor %}
 
 <div style="margin: 8px; padding: 12px;">
-    <h3>Enter your education</h3>
-    <form action="education" method="POST">
-        University: <input name="university" type="text" required/></br>
-        Degree: <input name="degree" type="text" required ></br>
-        Major: <input name="major" type="text" required></br>
-        From: <input name="fromdate" type="text" required>(Format: yyyy-mm-dd)</br>
-        To: <input name="todate" type="text">(Format: yyyy-mm-dd)</br>
-        Description: </br><textarea rows="5" cols="30" name="description">Anything you want to highlight?</textarea></br>
+    <h3>Enter your Skills</h3>
+    <form action="skills" method="POST">
+        Skill: <input name="skill" type="skill" required/></br>
+        Proficiency: <input name="proficiency" type="number" required ></br>
         <input class="btn btn-primary" type="submit" value="Submit">
     </form>
 </div>

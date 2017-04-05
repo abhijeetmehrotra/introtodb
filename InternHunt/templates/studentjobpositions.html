@@ -29,17 +29,36 @@
         <li><a href="dashboard">Dashboard</a></li>
         <li class="active"><a href="#">Jobs</a></li>
       </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="profile/education">Education</a></li>
+      <li><a href="profile/experience">Experience</a></li>
+      <li><a href="profile/skills">Skills</a></li>
+      <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+    </ul>
     </div>
   </div>
 </nav>
+
+
 
 <div class="container-fluid" style="width: 95%">
     <h2>Open Positions</h2>
     <div>
         Sort by:
-        <a class="btn btn-primary" href="?sortby=position">Position</a>
-        <a class="btn btn-primary" href="?sortby=company">Company</a>
-        <a class="btn btn-primary" href="?sortby=startdate">Start Data</a>
+        <div class="row">
+            <div class="col-sm-6">
+        Acsending
+        <a class="btn btn-primary" href="?sortby=position&sorttype=asc">Position</a>
+        <a class="btn btn-primary" href="?sortby=company&sorttype=asc">Company</a>
+        <a class="btn btn-primary" href="?sortby=startdate&sorttype=asc">Start Data</a>
+                </div>
+            <div class="col-sm-6">
+        Descending
+        <a class="btn btn-primary" href="?sortby=position&sorttype=desc">Position</a>
+        <a class="btn btn-primary" href="?sortby=company&sorttype=desc">Company</a>
+        <a class="btn btn-primary" href="?sortby=startdate&sorttype=desc">Start Data</a>
+            </div>
+            </div>
     </div>
     <br>
     {% for position in data %}

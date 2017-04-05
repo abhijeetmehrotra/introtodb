@@ -21,6 +21,8 @@ from flask import Flask, request, render_template, g, redirect, Response
 
 from studentend import user_authenticate, get_applications, get_jobpositions
 from studentend import get_student_education, delete_education, add_education
+from studentend import get_student_experience, delete_experience, add_experience
+from studentend import get_student_skill, delete_skill, add_skill
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -245,11 +247,60 @@ def deleteeducation():
     delete_education(university, degree, major, fromdate, sid, g.conn)
     return ('DELETED', 200)
 
+@app.route('/student/profile/experience', methods=["GET","POST"])
+def studentexperience():
+    userid = "1"
+    if request.method == "GET":
+        studentexperience = get_student_experience(userid, g.conn)
+        context = dict(data=studentexperience)
+        return render_template("studentexperience.html", **context)
+    elif request.method == "POST":
+        company = request.form['company']
+        position = request.form['position']
+        fromdate = request.form['fromdate']
+        todate = request.form['todate']
+        description = request.form['description']
+        sid = "1"
+        add_education(company, position, fromdate, todate, description, sid, g.conn)
+        return redirect('/student/profile/experience')
+
+@app.route('/student/profile/deleteexperience', methods=["POST"])
+def deleteexperience():
+    company = request.json['company']
+    position = request.json['position']
+    fromdate = request.json['fromdate']
+    sid = request.json['sid']
+    delete_experience(company, position, fromdate, sid, g.conn)
+    return ('DELETED', 200)
+
+@app.route('/student/profile/skills', methods=["GET","POST"])
+def studentskills():
+    userid = "1"
+    if request.method == "GET":
+        studentskills = get_student_skill(userid, g.conn)
+        context = dict(data=studentskills)
+        return render_template("studentskills.html", **context)
+    elif request.method == "POST":
+        skill = request.form['skill']
+        proficiency = request.form['proficiency']
+        sid = "1"
+        add_skill(skill, proficiency, sid, g.conn)
+        return redirect('/student/profile/skills')
+
+@app.route('/student/profile/deleteskill', methods=["POST"])
+def deleteskill():
+    skill = request.json['skill']
+    sid = request.json['sid']
+    delete_skill(skill, sid, g.conn)
+    return ('DELETED', 200)
+
 @app.route('/student/jobs', methods=["GET"])
 def studentgetopenjobs():
     sortby = request.args.get('sortby')
+    sorttype = request.args.get('sorttype')
+    print sortby
     if sortby in valid_sorting:
-        jobpositions = get_jobpositions(g.conn, sortby)
+        jobpositions = get_jobpositions(g.conn, sortby, sorttype)
     else:
         jobpositions = get_jobpositions(g.conn)
     print jobpositions

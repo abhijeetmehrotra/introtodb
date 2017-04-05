@@ -19,38 +19,130 @@ def get_applications(userid, conn):
 
 job_sortname = {"position": "type", "company": "company_name", "startdate": "fromdate"}
 
-def get_jobpositions(conn, sortby = None):
+def get_jobpositions(conn, sortby = None, sorttype = None):
     jobpositions = []
     if sortby is not None:
-        sorting_type = job_sortname[sortby]
-        query = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='OPEN' ORDER BY "+sorting_type
-        cursor = conn.execute(query)
+        sorting_by = job_sortname[sortby]
+        if sorttype == "desc":
+            query = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status=%s ORDER BY %s DESC"
+        else:
+            query = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status=%s ORDER BY %s ASC"
+        cursor = conn.execute(query, ("OPEN", sorting_by))
     else:
-        cursor = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='OPEN'")
+        cursor = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status=%s", ("OPEN"))
     for row in cursor:
         jobpositions.append(dict(row))
     return jobpositions
 
 def get_student_education(userid, conn):
     education = []
-    cursor = conn.execute("select * from education where stu_sid="+userid)
+    cursor = conn.execute("select * from education where stu_sid="+userid+" ORDER BY fromdate DESC")
     for row in cursor:
-        education.append(dict(row))
+        currentrow = dict(row)
+        if currentrow["todate"] is None:
+            currentrow["todate"] = "N/A"
+        if currentrow["description"] is None:
+            currentrow["description"] = "N/A"
+        education.append(dict(currentrow))
     return education
 
 def delete_education(university, degree, major, fromdate, sid, conn):
-    print("delete from education where university = %s AND degree = %s AND major = %s AND fromdate = %s AND stu_sid = %s", university, degree, major, fromdate, sid)
-    cursor = conn.execute("delete from education where university = %s AND degree = %s AND major = %s AND fromdate = %s AND stu_sid = %s", university, degree, major, fromdate, sid)
-    return
+    try:
+        cursor = conn.execute("delete from education where university = %s AND degree = %s AND major = %s AND fromdate = %s AND stu_sid = %s", (university, degree, major, fromdate, sid))
+        return True
+    except Exception:
+        return False
 
 def add_education(university, degree, major, fromdate, todate, description, sid, conn):
-    if todate is None:
-        todate = ""
-    if description is None:
-        description = ""
-    cursor = conn.execute("insert into education values(%s,%s,%s,%s,%s,%s,%s)", university, degree, major, fromdate, todate, description ,sid)
-    return
+    try:
+        if todate is None:
+            todate = ""
+        if description is None:
+            description = ""
+        cursor = conn.execute("insert into education values(%s,%s,%s,%s,%s,%s,%s)", (university, degree, major, fromdate, todate, description ,sid))
+        return True
+    except Exception:
+        return False
+
+def get_student_experience(userid, conn):
+    experience = []
+    cursor = conn.execute("select * from experience where stu_sid=%s ORDER BY fromdate DESC", (userid))
+    for row in cursor:
+        currentrow = dict(row)
+        if currentrow["todate"] is None:
+            currentrow["todate"] = "N/A"
+        if currentrow["description"] is None:
+            currentrow["description"] = "N/A"
+        experience.append(currentrow)
+    return experience
+
+def delete_experience(company, position, fromdate, sid, conn):
+    try:
+        cursor = conn.execute("delete from experience where company_name = %s AND position = %s AND fromdate = %s AND stu_sid = %s", (company, position, fromdate, sid))
+        return True
+    except:
+        return False
+
+def add_experience(company, position, fromdate, todate, description, sid, conn):
+    try:
+        if todate is None:
+            todate = ""
+        if description is None:
+            description = ""
+        cursor = conn.execute("insert into experience values(%s,%s,%s,%s,%s,%s)", (company, position, fromdate, todate, description ,sid))
+        return True
+    except:
+        return False
 
 
+def get_student_experience(userid, conn):
+    experience = []
+    cursor = conn.execute("select * from experience where stu_sid=%s ORDER BY fromdate DESC", (userid))
+    for row in cursor:
+        currentrow = dict(row)
+        if currentrow["todate"] is None:
+            currentrow["todate"] = "N/A"
+        if currentrow["description"] is None:
+            currentrow["description"] = "N/A"
+        experience.append(currentrow)
+    return experience
 
+def delete_experience(company, position, fromdate, sid, conn):
+    try:
+        cursor = conn.execute("delete from experience where company_name = %s AND position = %s AND fromdate = %s AND stu_sid = %s", (company, position, fromdate, sid))
+        return True
+    except:
+        return False
 
+def add_experience(company, position, fromdate, todate, description, sid, conn):
+    try:
+        if todate is None:
+            todate = ""
+        if description is None:
+            description = ""
+        cursor = conn.execute("insert into experience values(%s,%s,%s,%s,%s,%s)", (company, position, fromdate, todate, description ,sid))
+        return True
+    except:
+        return False
+
+def get_student_skill(userid, conn):
+    skills = []
+    cursor = conn.execute("select * from skills where stu_sid=%s", (userid))
+    for row in cursor:
+        currentrow = dict(row)
+        skills.append(currentrow)
+    return skills
+
+def delete_skill(skill, sid, conn):
+    try:
+        cursor = conn.execute("delete from skills where skill_name = %s AND stu_sid = %s", (skill, sid))
+        return True
+    except:
+        return False
+
+def add_skill(skill, proficiency, sid, conn):
+    try:
+        cursor = conn.execute("insert into skills values(%s,%s,%s)", (skill, proficiency, sid))
+        return True
+    except:
+        return False

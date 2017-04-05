@@ -10,17 +10,16 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="application/javascript">
 
-        function deleteEducation(university, degree, major, fromdate, sid) {
+        function deleteExperience(company, position, fromdate, sid) {
             parameters = {
-                'university': university,
-                'degree':degree,
-                'major':major,
+                'company': company,
+                'position':position,
                 'fromdate':fromdate,
                 'sid':sid
             };
             var promise = new Promise(function (success, failure) {
                 $.ajax({
-                    url: 'deleteeducation',
+                    url: 'deleteexperience',
                     type: 'POST',
                     contentType: "application/json",
                     data: JSON.stringify(parameters),
@@ -48,8 +47,8 @@
         <li><a href="/student/jobs">Jobs</a></li>
       </ul>
         <ul class="nav navbar-nav navbar-right">
-      <li class="active"><a href="#">Education</a></li>
-      <li><a href="experience">Experience</a></li>
+      <li><a href="education">Education</a></li>
+      <li class="active"><a href="#">Experience</a></li>
       <li><a href="skills">Skills</a></li>
       <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
     </ul>
@@ -58,46 +57,45 @@
 </nav>
 
 <div class="container-fluid" style="width: 95%">
-{% for education in data %}
+{% for experience in data %}
 <div style="margin: 8px; padding: 12px; background: #efefef">
             <div class="row">
                 <div class="col-sm-6">
-                    University: <span class="text-primary"><b>{{ education.university }}</b></span>
+                    Company: <span class="text-primary"><b>{{ experience.company_name }}</b></span>
                 </div>
                 <div class="col-sm-5">
-                    Degree-Major: <span class="text-info"><b>{{ education.degree }} {{ education.major }}</b></span>
+                    Position: <span class="text-info"><b>{{ experience.position }}</b></span>
                 </div>
                 <div class="col-sm-1">
-                    <input class="btn btn-danger" type="button" value="Delete" onclick="deleteEducation('{{ education.university}}', '{{ education.degree}}','{{ education.major}}', '{{education.fromdate}}', '{{education.stu_sid}}')" />
+                    <input class="btn btn-danger" type="button" value="Delete" onclick="deleteExperience('{{ experience.company_name}}', '{{ experience.position}}','{{ experience.fromdate}}', '{{experience.stu_sid}}')" />
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                    From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
+                    From: <span class="text-primary"><b>{{ experience.fromdate }}</b></span>
                 </div>
                 <div class="col-sm-6">
-                    To: <span class="text-info"><b>{{ education.todate }}</b></span>
+                    To: <span class="text-info"><b>{{ experience.todate }}</b></span>
                 </div>
             </div>
     <br>
             <div class="row">
                 <div class="col-sm-12">
                     Description:</br>
-                    {{ education.description }}
+                    {{ experience.description }}
                 </div>
             </div>
 </div>
 {% endfor %}
 
 <div style="margin: 8px; padding: 12px;">
-    <h3>Enter your education</h3>
-    <form action="education" method="POST">
-        University: <input name="university" type="text" required/></br>
-        Degree: <input name="degree" type="text" required ></br>
-        Major: <input name="major" type="text" required></br>
-        From: <input name="fromdate" type="text" required>(Format: yyyy-mm-dd)</br>
-        To: <input name="todate" type="text">(Format: yyyy-mm-dd)</br>
-        Description: </br><textarea rows="5" cols="30" name="description">Anything you want to highlight?</textarea></br>
+    <h3>Enter your experience</h3>
+    <form action="experience" method="POST">
+        Company: <input name="company" type="text" required/></br>
+        Position: <input name="position" type="text" required ></br>
+        From: <input name="fromdate" type="date" required>(Format: yyyy-mm-dd)</br>
+        To: <input name="todate" type="date">(Format: yyyy-mm-dd)</br>
+        Description: </br><textarea rows="5" cols="30" name="description">What did you do there?</textarea></br>
         <input class="btn btn-primary" type="submit" value="Submit">
     </form>
 </div>
