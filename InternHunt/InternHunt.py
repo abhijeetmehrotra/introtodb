@@ -298,7 +298,6 @@ def deleteskill():
 def studentgetopenjobs():
     sortby = request.args.get('sortby')
     sorttype = request.args.get('sorttype')
-    print sortby
     if sortby in valid_sorting:
         jobpositions = get_jobpositions(g.conn, sortby, sorttype)
     else:
