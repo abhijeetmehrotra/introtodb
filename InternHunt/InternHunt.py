@@ -237,9 +237,44 @@ def create_job():
   toDate = request.form["toDate"]
   print (title, description, fromDate, toDate)
 
-@app.route('/recruiter/viewjobs', methods=["GET"])
+@app.route('/recruiter/appaction', methods=["POST"])
+def modify_job():
+
+    pid = request.form["pid"]
+    sid = request.form["sid"]
+    action = request.form["action"]
+    query1 = "update application set status = '"+ action+"' where pid="+pid+" and sid="+sid
+    cursor1 = g.conn.execute(query1)
+    return redirect("/recruiter/jobs?pid=1", code=302)
+
+@app.route('/recruiter/jobs', methods=["GET"])
 def viewjobs():
-    jobpositions = get_jobs(g.conn, 'fromdate', )
+    pid = request.args.get('pid')
+    jobposition = get_job(g.conn, pid)
+    # print jobposition
+    context = dict(data=jobposition)
+    return render_template("viewjob.html", **context)
+
+def get_job(conn, pid):
+    query1 = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where pid = "+pid
+    cursor1 = conn.execute(query1)
+    openjobpositions = []
+    for row in cursor1:
+        openjobpositions.append(dict(row))
+
+    query2 = "select pid, sid, resume, status from application where status = 'PENDING' and pid = "+pid
+    cursor2 = conn.execute(query2)
+    applicants = []
+    for row in cursor2:
+
+        applicants.append(dict(row))
+
+
+    return {'openpositions':openjobpositions, 'applicants':applicants}
+
+@app.route('/recruiter/viewjobs', methods=["GET"])
+def viewapp():
+    jobpositions = get_jobs(g.conn, 'fromdate')
     print jobpositions
     context = dict(data=jobpositions)
     return render_template("viewapplication.html", **context)

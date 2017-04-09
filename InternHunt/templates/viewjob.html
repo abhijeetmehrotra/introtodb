@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View job</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Intern Hunt</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid" style="width: 95%">
+ <h2>Position details:</h2>
+
+    {% for position in data.postiondata %}
+        <div class="row row-striped" style="padding: 12px">
+            <div class="row">
+                <div class="col-sm-4">
+                    Position: <span class="text-primary"><b>{{ position.type }}</b></span>
+                </div>
+                <div class="col-sm-4">
+                    Company: <span class="text-info">{{ position.company_name }}</span>
+                </div>
+                <div class="col-sm-4">
+                    Company Size: {{ position.size }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    From Data: {{ position.fromdate }}
+                </div>
+                <div class="col-sm-4">
+                    To Date:
+                    {% if position.todate == None %}
+                        Not Specified
+                    {% else %}
+                        {{ position.todate }}
+                    {% endif %}
+                </div>
+                <div class="col-sm-4">
+                    Industry: {{ position.industry }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    Job Description: {{ position.description }}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <h2>Applicants:</h2>
+    {% for person in data.applicants %}
+        <div class="row row-striped" style="padding: 12px">
+            <div class="row">
+{#                <div class="col-sm-4">#}
+{#                    Position: <span class="text-primary"><b>{{ position.type }}</b></span>#}
+{#                </div>#}
+{#                <div class="col-sm-4">#}
+{#                    Company: <span class="text-info">{{ position.company_name }}</span>#}
+{#                </div>#}
+{#                <div class="col-sm-4">#}
+{#                    Company Size: {{ position.size }}#}
+{#                </div>#}
+                  <div class="col-sm-4">
+                      SID: <span class="text-primary"><b>{{ person.sid }}</b></span>
+                      PID: <span class="text-primary"><b>{{ person.pid }}</b></span>
+            </div>
+{#            <div class="row">#}
+{#                <div class="col-sm-4">#}
+{#                    From Data: {{ position.fromdate }}#}
+{#                </div>#}
+{#                <div class="col-sm-4">#}
+{#                    To Date:#}
+{#                    {% if position.todate == None %}#}
+{#                        Not Specified#}
+{#                    {% else %}#}
+{#                        {{ position.todate }}#}
+{#                    {% endif %}#}
+{#                </div>#}
+{#                <div class="col-sm-4">#}
+{#                    Industry: {{ position.industry }}#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row">#}
+{#                <div class="col-sm-8">#}
+{#                    Job Description: {{ position.description }}#}
+{#                </div>#}
+                <div class="col-sm-4">
+                      <form action="/recruiter/appaction" method="post">
+                           <input type="hidden" name="pid" value="{{person.pid}}">
+                           <input type="hidden" name="sid" value="{{person.sid}}">
+                           <input type="hidden" name="action" value="ACCEPT">
+                           <input type="submit" class="btn btn-info" value="Accept">
+                      </form>
+                      <form action="/recruiter/appaction" method="post">
+                           <input type="hidden" name="pid" value="{{person.pid}}">
+                           <input type="hidden" name="sid" value="{{person.sid}}">
+                           <input type="hidden" name="action" value="REJECT">
+                           <input type="submit" class="btn btn-info" value="Reject">
+                      </form>
+
+{#                    <a href="/recruiter/jobs?={{ position.pid }}" target="_blank" class="btn btn-primary">View</a>#}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
+
+
+</body>
+</html>
