@@ -4,11 +4,12 @@ def user_authenticate(username, password, conn):
     cursor = conn.execute("SELECT * FROM student WHERE email = %s",username)
     record = cursor.fetchone()
     if record is None:
-        return False
+        return (False)
     elif record["password"] == password:
-        return True
+        print(record)
+        return (True, record["sid"])
     else:
-        return False
+        return (False)
 
 def get_applications(userid, conn):
     applications = []
@@ -146,3 +147,12 @@ def add_skill(skill, proficiency, sid, conn):
         return True
     except:
         return False
+
+
+def insert_application(sid, pid, conn):
+    try:
+        cursor = conn.execute("insert into application values(%s,%s,%s,%s)", (pid, sid,"https://s3.amazonaws.com/jobhunt-resume/"+sid+"_"+pid+".pdf","PENDING"))
+        return True
+    except:
+        return False
+

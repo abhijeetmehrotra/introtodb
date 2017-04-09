@@ -20,8 +20,8 @@
 
 <div class="container-fluid" style="width: 90%">
     <h3>Application</h3>
-<form method="post" action="">
-    <input type="file" />
+<form method="post" action="/student/apply" enctype="multipart/form-data">
+    <input type="file" name="resume" id="resume" accept="application/pdf" />
     <input type="hidden" name="pid" value="{{ data.pid }}">
     <br>
     <input type="submit" value="Submit" class="btn btn-primary">

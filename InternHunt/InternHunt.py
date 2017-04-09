@@ -18,31 +18,27 @@ import os, json
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
+from boto.s3.connection import S3Connection
+from boto.s3.key import Key
+from flask import Flask, session
+from flask_session import Session
+from functools import wraps
 
 from studentend import user_authenticate, get_applications, get_jobpositions
 from studentend import get_student_education, delete_education, add_education
 from studentend import get_student_experience, delete_experience, add_experience
 from studentend import get_student_skill, delete_skill, add_skill
+from studentend import insert_application
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
-
-#
-# The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
-#
-# XXX: The URI should be in the format of:
-#
-#     postgresql://USER:PASSWORD@104.196.18.7/w4111
-#
-# For example, if you had username biliris and password foobar, then the following line would be:
-#
-#     DATABASEURI = "postgresql://biliris:foobar@104.196.18.7/w4111"
-#
-
 db_cred_json = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db_credentials.json')
 db_cred = None
+
+aws_cred_json = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'aws_credentials.json')
+aws_cred = None
 
 try:
     if not (os.path.exists(db_cred_json) or os.path.isfile(db_cred_json)):
@@ -53,25 +49,18 @@ try:
 except Exception as err:
     print err
 
+try:
+    if not (os.path.exists(aws_cred_json) or os.path.isfile(aws_cred_json)):
+        raise OSError('file does not exist')
+
+    with open(aws_cred_json, 'r') as handle:
+        aws_cred = json.load(handle)
+except Exception as err:
+    print err
+
 DATABASEURI = "postgresql://"+db_cred["USERNAME"]+":"+db_cred["PASSWORD"]+"@"+db_cred["HOST"]+"/"+db_cred["DATABASE"]
 
-
-#
-# This line creates a database engine that knows how to connect to the URI above.
-#
 engine = create_engine(DATABASEURI)
-
-#
-# Example of running queries in your database
-# Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
-#
-"""
-engine.execute("CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);")
-engine.execute("INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');")
-"""
 
 @app.before_request
 def before_request():
@@ -185,31 +174,43 @@ def index():
 def another():
   return render_template("another.html")
 
+def login_required(role=None):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_function(*args, **kwargs):
+            if 'role' in session and role == session['role']:
+                return fn(*args, **kwargs)
+            elif role == 'student':
+                return redirect("/student/login")
+        return decorated_function
+    return wrapper
 
-# Example of adding new data to the database
-@app.route('/add', methods=['POST'])
-def add():
-  name = request.form['name']
-  print name
-  g.conn.execute('INSERT INTO test VALUES (default, %s)', name)
-  return redirect('/')
-
-
-@app.route('/login')
-def login():
-    pass
-
-@app.route('/student/login', methods=["GET,POST"])
+@app.route('/student/login', methods=["GET","POST"])
 def studentlogin():
   if request.method == "GET":
     return render_template("studentlogin.html")
   elif request.method == "POST":
+    print "Authenticating user"
     username = request.form["username"]
     password = request.form["password"]
-    is_authenticated = user_authenticate(username, password, g.conn)
-    return render_template("studentdashboard.html")
+    auth = user_authenticate(username, password, g.conn)
+    if auth[0]:
+        """
+            Store sid and all other stuff in session info
+        """
+        session['sid'] = auth[1]
+        session['role'] = 'student'
+        return render_template("studentdashboard.html")
+    else:
+        return redirect("/student/login")
+
+@app.route('/student/logout', methods=["GET"])
+def studentlogout():
+    session.clear()
+    return redirect("/student/login")
 
 @app.route('/student/dashboard', methods=["GET"])
+@login_required(role='student')
 def studentdashboard():
   userid = "1"
   applications = get_applications(userid, g.conn)
@@ -220,6 +221,7 @@ def studentdashboard():
 valid_sorting = ["position", "company", "startdate"]
 
 @app.route('/student/profile/education', methods=["GET","POST"])
+@login_required(role='student')
 def studentprofile():
     userid = "1"
     if request.method == "GET":
@@ -238,6 +240,7 @@ def studentprofile():
         return redirect('/student/profile/education')
 
 @app.route('/student/profile/deleteeducation', methods=["POST"])
+@login_required(role='student')
 def deleteeducation():
     university = request.json['university']
     degree = request.json['degree']
@@ -248,6 +251,7 @@ def deleteeducation():
     return ('DELETED', 200)
 
 @app.route('/student/profile/experience', methods=["GET","POST"])
+@login_required(role='student')
 def studentexperience():
     userid = "1"
     if request.method == "GET":
@@ -265,6 +269,7 @@ def studentexperience():
         return redirect('/student/profile/experience')
 
 @app.route('/student/profile/deleteexperience', methods=["POST"])
+@login_required(role='student')
 def deleteexperience():
     company = request.json['company']
     position = request.json['position']
@@ -274,6 +279,7 @@ def deleteexperience():
     return ('DELETED', 200)
 
 @app.route('/student/profile/skills', methods=["GET","POST"])
+@login_required(role='student')
 def studentskills():
     userid = "1"
     if request.method == "GET":
@@ -288,6 +294,7 @@ def studentskills():
         return redirect('/student/profile/skills')
 
 @app.route('/student/profile/deleteskill', methods=["POST"])
+@login_required(role='student')
 def deleteskill():
     skill = request.json['skill']
     sid = request.json['sid']
@@ -295,6 +302,7 @@ def deleteskill():
     return ('DELETED', 200)
 
 @app.route('/student/jobs', methods=["GET"])
+@login_required(role='student')
 def studentgetopenjobs():
     sortby = request.args.get('sortby')
     sorttype = request.args.get('sorttype')
@@ -307,7 +315,9 @@ def studentgetopenjobs():
     return render_template("studentjobpositions.html", **context)
 
 @app.route('/student/apply', methods=["GET","POST"])
+@login_required(role='student')
 def studentapply():
+    sid = "1"
     if request.method == "GET":
         pid = request.args.get('pid')
         if pid is not None:
@@ -317,8 +327,22 @@ def studentapply():
         else:
             return redirect("jobs")
     elif request.method == "POST":
-        pass
-
+        if 'resume' in request.files:
+            data_file = request.files['resume']
+            pid = request.form["pid"]
+            submitted = insert_application(sid, pid, g.conn)
+            if submitted == True:
+                conn = S3Connection(aws_cred["ACCESS_KEY"],aws_cred["SECRET_KEY"])
+                bucket = conn.get_bucket(aws_cred["BUCKET_NAME"])
+                k = Key(bucket)
+                k.key = sid+"_"+pid+'.pdf'
+                # k.set_contents_from_file(data_file)
+                k.set_contents_from_string(data_file.read())
+                return ('Application Accepted<br/><a href="/student/dashboard">Go back to dashboard</a>', 200)
+            else:
+                return('Already applied<br/><a href="/student/dashboard">Go back to dashboard</a>', 200)
+        else:
+            return ('File not uploaded', 400)
 
 if __name__ == "__main__":
   import click
@@ -340,38 +364,14 @@ if __name__ == "__main__":
         python server.py --help
 
     """
-
+    app.secret_key = 'dadahatesui'
+    app.config['SESSION_TYPE'] = 'filesystem'
     HOST, PORT = host, port
     print "running on %s:%d" % (HOST, PORT)
+    sess = Session()
+    sess.init_app(app)
 
     app.run(host=HOST, port=PORT, debug=debug, threaded=threaded, use_reloader=True)
 
 
   run()
-
-"""from flask import Flask
-import os, json
-from sqlalchemy import *
-
-db_cred_json = "db_credentials"
-db_cred = None
-
-try:
-    if not (os.path.exists(db_cred_json) or os.path.isfile(db_cred_json)):
-        raise OSError('file does not exist')
-
-    with open(db_cred_json, 'r') as handle:
-        db_cred = json.load(handle)
-except Exception as err:
-    print err
-
-app = Flask(__name__)
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
-
-if __name__ == '__main__':
-    app.run()"""
