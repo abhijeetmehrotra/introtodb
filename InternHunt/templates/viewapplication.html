@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .row-striped:nth-child(odd){
+  background-color: #efefef;
+}
+
+.row-striped:nth-child(even){
+  background-color: #ffffff;
+}
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="dashboard">Intern Hunt</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li><a href="dashboard">Dashboard</a></li>
+        <li class="active"><a href="#">Jobs</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid" style="width: 95%">
+    <h2>Open Positions</h2>
+
+    {% for position in data.openpositions %}
+        <div class="row row-striped" style="padding: 12px">
+            <div class="row">
+                <div class="col-sm-4">
+                    Position: <span class="text-primary"><b>{{ position.type }}</b></span>
+                </div>
+                <div class="col-sm-4">
+                    Company: <span class="text-info">{{ position.company_name }}</span>
+                </div>
+                <div class="col-sm-4">
+                    Company Size: {{ position.size }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    From Data: {{ position.fromdate }}
+                </div>
+                <div class="col-sm-4">
+                    To Date:
+                    {% if position.todate == None %}
+                        Not Specified
+                    {% else %}
+                        {{ position.todate }}
+                    {% endif %}
+                </div>
+                <div class="col-sm-4">
+                    Industry: {{ position.industry }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    Job Description: {{ position.description }}
+                </div>
+                <div class="col-sm-4">
+                    <a href="/recruiter/jobs?pid={{ position.pid }}" target="_blank" class="btn btn-primary">View</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="container-fluid" style="width: 95%">
+    <h2>Closed Positions</h2>
+
+    {% for position in data.closedpositions %}
+        <div class="row row-striped" style="padding: 12px">
+            <div class="row">
+                <div class="col-sm-4">
+                    Position: <span class="text-primary"><b>{{ position.type }}</b></span>
+                </div>
+                <div class="col-sm-4">
+                    Company: <span class="text-info">{{ position.company_name }}</span>
+                </div>
+                <div class="col-sm-4">
+                    Company Size: {{ position.size }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    From Data: {{ position.fromdate }}
+                </div>
+                <div class="col-sm-4">
+                    To Date:
+                    {% if position.todate == None %}
+                        Not Specified
+                    {% else %}
+                        {{ position.todate }}
+                    {% endif %}
+                </div>
+                <div class="col-sm-4">
+                    Industry: {{ position.industry }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8">
+                    Job Description: {{ position.description }}
+                </div>
+                <div class="col-sm-4">
+                    <a href="/recruiter/jobs?pid={{ position.pid }}" target="_blank" class="btn btn-primary">View</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>
