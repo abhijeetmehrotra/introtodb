@@ -434,6 +434,15 @@ def modify_job():
     cursor1 = g.conn.execute(query1, (action, pid, sid, hid))
     return redirect("/recruiter/jobs?pid="+pid)
 
+@app.route('/recruiter/posaction', methods=["POST"])
+@login_required(role='recruiter')
+def modify_posting():
+    pid = request.form["pid"]
+    hid = session["hid"]
+    query1 = "update jobposition set status ='CLOSED' where pid=%s and pid in (select pid from jobposition where hr_hid=%s)"
+    cursor1 = g.conn.execute(query1, (pid, hid))
+    return redirect("/recruiter/viewjobs")
+
 @app.route('/recruiter/jobs', methods=["GET"])
 @login_required(role='recruiter')
 def viewjobs():

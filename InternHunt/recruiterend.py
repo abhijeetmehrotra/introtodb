@@ -74,7 +74,7 @@ def get_jobs(hid, conn, sortby):
         cursor1 = conn.execute(query1,(hid))
 
     else:
-        cursor1 = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where hr_hid = %s",(hid))
+        cursor1 = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size, status from jobposition INNER JOIN company on com_cid=cid where hr_hid = %s",(hid))
 
     for row in cursor1:
         pos = dict(row)

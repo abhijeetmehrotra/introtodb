@@ -77,11 +77,23 @@
                 </div>
             </div>
             <div class="row">
-            <div class="col-sm-3"><b>Pending:<span class="text-primary"> {{ position.pending }} </span></b></div>
-            <div class="col-sm-3"><b>Accepted:<span class="text-success"> {{ position.accept }} </span></b></div>
-            <div class="col-sm-3"><b>Rejected:<span class="text-danger"> {{ position.reject }} </span></b></div>
+            <div class="col-sm-2"><b>Pending:<span class="text-primary"> {{ position.pending }} </span></b></div>
+            <div class="col-sm-2"><b>Accepted:<span class="text-success"> {{ position.accept }} </span></b></div>
+            <div class="col-sm-2"><b>Rejected:<span class="text-danger"> {{ position.reject }} </span></b></div>
 {#            <div class="col-sm-3"><b>Total:<span> {{ job.total }} </span></b></div>#}
-        </div>
+
+                      <div class="col-sm-2">
+                      </div>
+                      <div class="col-sm-2">
+                      <form action="/recruiter/posaction" method="post">
+                           <input type="hidden" name="pid" value="{{position.pid}}">
+                           <input type="hidden" name="action" value="REJECT">
+                           <input type="submit" class="btn btn-danger" value="Reject">
+                      </form>
+                      </div>
+                       <div class="col-sm-4">
+                      </div>
+                </div>
         <br>
         </div>
     {% endfor %}
