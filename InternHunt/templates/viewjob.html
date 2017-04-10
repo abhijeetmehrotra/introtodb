@@ -14,11 +14,18 @@
     <div class="navbar-header">
       <a class="navbar-brand" href="#">Intern Hunt</a>
     </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav navbar-right">
+      <li><a href="/recruiter/viewjobs">Dashboard</a></li>
+      <li><a href="/recruiter/createjob">Create Job</a></li>
+      <li><a href="/recruiter/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+    </ul>
+    </div>
   </div>
 </nav>
 
 <div class="container-fluid" style="width: 95%">
- <h2>Position details:</h2>
+ <h3>Position details:</h3>
 
     {% for position in data.positiondata %}
         <div class="row row-striped" style="padding: 12px">
@@ -57,12 +64,18 @@
         </div>
     {% endfor %}
 
-    <h2>Open Applications:</h2>
+    <h3>Open Applications:</h3>
     {% for person in data.applicants %}
-        <div class="row row-striped" style="padding: 12px">
-            <div class="row">
-
-                  <h3>Education</h3>
+            <div class="row" style="border:1px solid black; margin-top: 16px ; padding: 16px">
+                <div class="row" style="margin-top: 8px">
+                     <div class="col-sm-6">
+                         <h4>{{ person.name.first_name}} {{ person.name.last_name}}</h4>
+                    </div>
+                    <div class="col-sm-6">
+                        <a class="btn btn-primary" href="{{ person.resume }}">Resume</a>
+                    </div>
+                </div>
+                  <h4>Education</h4>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -74,14 +87,14 @@
                           </div>
 
                       </div>
-                      <div class="row">
-                          <div class="col-sm-6">
-                              From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
-                          </div>
-                      <div class="col-sm-6">
-                          To: <span class="text-info"><b>{{ education.todate }}</b></span>
-                      </div>
-                  </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                               From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
+                             </div>
+                             <div class="col-sm-6">
+                               To: <span class="text-info"><b>{{ education.todate }}</b></span>
+                             </div>
+                       </div>
                   <br>
                           <div class="row">
                               <div class="col-sm-12">
@@ -92,7 +105,7 @@
                 </div>
                 {% endfor %}
 
-                 <h3>Experience</h3>
+                 <h4>Experience</h4>
                 {% for experience in person.experience %}
                 <div style="margin: 8px; padding: 12px; background: #efefef">
                     <div class="row">
@@ -121,7 +134,7 @@
               </div>
               {% endfor %}
 
-              <h3>Skills</h3>
+              <h4>Skills</h4>
               {% for skills in person.skills %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -144,7 +157,7 @@
                            <input type="hidden" name="pid" value="{{person.pid}}">
                            <input type="hidden" name="sid" value="{{person.sid}}">
                            <input type="hidden" name="action" value="ACCEPT">
-                           <input type="submit" class="btn btn-info" value="Accept">
+                           <input type="submit" class="btn btn-success" value="Accept">
                       </form>
                       </div>
                       <div class="col-sm-2">
@@ -152,22 +165,27 @@
                            <input type="hidden" name="pid" value="{{person.pid}}">
                            <input type="hidden" name="sid" value="{{person.sid}}">
                            <input type="hidden" name="action" value="REJECT">
-                           <input type="submit" class="btn btn-info" value="Reject">
+                           <input type="submit" class="btn btn-danger" value="Reject">
                       </form>
                       </div>
                        <div class="col-sm-4">
                       </div>
                 </div>
             </div>
-        </div>
     {% endfor %}
 
-<h2>Accepted Applications:</h2>
+<h3>Accepted Applications:</h3>
     {% for person in data.accepted %}
-        <div class="row row-striped" style="padding: 12px">
-            <div class="row">
-
-                  <h3>Education</h3>
+        <div class="row" style="border:1px solid black; margin-top: 16px ; padding: 16px">
+                <div class="row" style="margin-top: 8px">
+                     <div class="col-sm-6">
+                         <h4>{{ person.name.first_name}} {{ person.name.last_name}}</h4>
+                    </div>
+                    <div class="col-sm-6">
+                        <a class="btn btn-primary" href="{{ person.resume }}">Resume</a>
+                    </div>
+                </div>
+                  <h4>Education</h4>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -197,7 +215,7 @@
                 </div>
                 {% endfor %}
 
-                 <h3>Experience</h3>
+                 <h4>Experience</h4>
                 {% for experience in person.experience %}
                 <div style="margin: 8px; padding: 12px; background: #efefef">
                     <div class="row">
@@ -226,7 +244,7 @@
               </div>
               {% endfor %}
 
-              <h3>Skills</h3>
+              <h4>Skills</h4>
               {% for skills in person.skills %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -241,15 +259,20 @@
               {% endfor %}
 
             </div>
-        </div>
     {% endfor %}
 
-<h2>Rejected Applications:</h2>
+<h3>Rejected Applications:</h3>
     {% for person in data.rejected %}
-        <div class="row row-striped" style="padding: 12px">
-            <div class="row">
-
-                  <h3>Education</h3>
+        <div class="row" style="border:1px solid black; margin-top: 16px ; padding: 16px">
+                <div class="row" style="margin-top: 8px">
+                     <div class="col-sm-6">
+                         <h4>{{ person.name.first_name}} {{ person.name.last_name}}</h4>
+                    </div>
+                    <div class="col-sm-6">
+                        <a class="btn btn-primary" href="{{ person.resume }}">Resume</a>
+                    </div>
+                </div>
+                  <h4>Education</h4>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -279,7 +302,7 @@
                 </div>
                 {% endfor %}
 
-                 <h3>Experience</h3>
+                 <h4>Experience</h4>
                 {% for experience in person.experience %}
                 <div style="margin: 8px; padding: 12px; background: #efefef">
                     <div class="row">
@@ -308,7 +331,7 @@
               </div>
               {% endfor %}
 
-              <h3>Skills</h3>
+              <h4>Skills</h4>
               {% for skills in person.skills %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -322,7 +345,6 @@
                  </div>
               {% endfor %}
 
-            </div>
         </div>
     {% endfor %}
 

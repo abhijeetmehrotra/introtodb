@@ -30,7 +30,7 @@ from studentend import get_student_experience, delete_experience, add_experience
 from studentend import get_student_skill, delete_skill, add_skill
 from studentend import insert_application,insert_student
 
-import recruiterend, utils
+from recruiterend import authenticate_recruiter, get_jobs, get_job
 
 
 from companyend import authenticate_company, get_hr_and_jobs
@@ -187,6 +187,10 @@ def login_required(role=None):
                 return fn(*args, **kwargs)
             elif role == 'student':
                 return redirect("/student/login")
+            elif role == 'recruiter':
+                return redirect("/recruiter/login")
+            elif role == 'company':
+                return redirect("/company/login")
         return decorated_function
     return wrapper
 
@@ -221,9 +225,10 @@ def studentlogin():
         """
             Store sid and all other stuff in session info
         """
+        session.clear()
         session['sid'] = str(auth[1])
         session['role'] = 'student'
-        return render_template("studentdashboard.html")
+        return redirect("/student/dashboard")
     else:
         return redirect("/student/login")
 
@@ -236,7 +241,7 @@ def studentlogout():
 @login_required(role='student')
 def studentdashboard():
   applications = get_applications(session["sid"], g.conn)
-  print applications
+  # print applications
   context = dict(data=applications)
   return render_template("studentdashboard.html", **context)
 
@@ -323,7 +328,7 @@ def studentgetopenjobs():
         jobpositions = get_jobpositions(g.conn, sortby, sorttype)
     else:
         jobpositions = get_jobpositions(g.conn)
-    print jobpositions
+    # print jobpositions
     context = dict(data=jobpositions)
     return render_template("studentjobpositions.html", **context)
 
@@ -361,70 +366,82 @@ def studentapply():
 Implementation for Recruiter/HR end
 """
 
-@app.route('/recruiter/login', methods=["GET"])
+@app.route('/recruiter/login', methods=["GET","POST"])
 def recruiterlogin():
-  return render_template("recruiterlogin.html")
+    if request.method == "GET":
+        return render_template("recruiterlogin.html")
+    elif request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        auth = authenticate_recruiter(username, password, g.conn)
+        if auth[0]:
+            """
+                Store hid and all other stuff in session info
+            """
+            session.clear()
+            session['hid'] = str(auth[1])
+            session['role'] = 'recruiter'
+            return redirect("/recruiter/viewjobs")
+        else:
+            return redirect("/recruiter/login")
 
-@app.route('/recruiter/login', methods=["POST"])
-def verify_recruiter():
-  if request.method == 'POST':
-    username = request.form['username']
-    password = request.form['password']
-    recruiterend.authenticate_recruiter(username, password, g.conn)
+@app.route('/recruiter/logout', methods=["GET"])
+def recruiterlogout():
+    session.clear()
+    return redirect("/recruiter/login")
 
-@app.route('/recruiter/createjob', methods=["GET"])
+@app.route('/recruiter/createjob', methods=["GET","POST"])
+@login_required(role='recruiter')
 def createjobrender():
-  return render_template("createapplication.html")
-
-@app.route('/recruiter/createjob', methods=["POST"])
-def create_job():
-      type = request.form["title"]
-      description = request.form["description"]
-      fromDate = request.form["fromDate"]
-      toDate = request.form["toDate"]
-      status = "OPEN"
-      hr_hid = 1
-      com_cid = 2
-
-      query1 = "insert into jobposition values(DEFAULT, %s, %s, %s, %s, %s, %s, %s)"
-
-      cursor1 = g.conn.execute(query1,(type, status, description, fromDate, toDate, hr_hid, com_cid))
-
-      return redirect("/recruiter/viewjobs", code=302)
+    if request.method == "GET":
+        return render_template("createapplication.html")
+    elif request.method == "POST":
+        type = request.form["title"]
+        description = request.form["description"]
+        fromDate = request.form["fromDate"]
+        toDate = request.form["toDate"]
+        status = "OPEN"
+        hr_hid = session["hid"]
+        query = "select com_cid from hr where hid=%s"
+        cursor = g.conn.execute(query, (hr_hid))
+        com_cid = cursor.fetchone()['com_cid']
+        query1 = "insert into jobposition values(DEFAULT, %s, %s, %s, %s, %s, %s, %s)"
+        cursor1 = g.conn.execute(query1, (type, status, description, fromDate, toDate, hr_hid, com_cid))
+        return redirect("/recruiter/viewjobs", code=302)
 
 @app.route('/recruiter/appaction', methods=["POST"])
+@login_required(role='recruiter')
 def modify_job():
-
     pid = request.form["pid"]
     sid = request.form["sid"]
+    hid = session["hid"]
     action = request.form["action"]
-    query1 = "update application set status =%s where pid=%s and sid=%s"
-    cursor1 = g.conn.execute(query1, (action, pid, sid))
-    return redirect("/recruiter/jobs?pid=1", code=302)
+    query1 = "update application set status =%s where pid=%s and sid=%s and pid in (select pid from jobposition where hr_hid=%s)"
+    cursor1 = g.conn.execute(query1, (action, pid, sid, hid))
+    return redirect("/recruiter/jobs?pid="+pid)
 
 @app.route('/recruiter/jobs', methods=["GET"])
+@login_required(role='recruiter')
 def viewjobs():
     pid = request.args.get('pid')
-    jobposition = utils.get_job(g.conn, pid)
+    hid = session["hid"]
+    jobposition = get_job(hid, g.conn, pid)
     context = dict(data=jobposition)
     return render_template("viewjob.html", **context)
 
 @app.route('/recruiter/viewjobs', methods=["GET"])
+@login_required(role='recruiter')
 def viewapp():
-    jobpositions = utils.get_jobs(g.conn, 'fromdate')
+    hid = session["hid"]
+    jobpositions = get_jobs(hid, g.conn, 'fromdate')
     context = dict(data=jobpositions)
     return render_template("viewapplication.html", **context)
-
-
-
-
 
 """
 Implementation for Company end
 """
 
 @app.route('/company/login', methods=["GET","POST"])
-@login_required(role='company')
 def companylogin():
   if request.method == "GET":
     return render_template("companylogin.html")
@@ -437,9 +454,10 @@ def companylogin():
         """
             Store sid and all other stuff in session info
         """
+        session.clear()
         session['cid'] = str(auth[1])
         session['role'] = 'company'
-        return render_template("companydashboard.html")
+        return redirect("/company/dashboard")
     else:
         return redirect("/company/login")
 
@@ -452,7 +470,7 @@ def companylogout():
 @login_required(role='company')
 def companydashboard():
   hr_and_jobs = get_hr_and_jobs(session["cid"], g.conn)
-  context = dict(data=hr_and_jobs)
+  context = hr_and_jobs
   return render_template("companydashboard.html", **context)
 
 if __name__ == "__main__":
