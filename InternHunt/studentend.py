@@ -37,7 +37,7 @@ def get_jobpositions(conn, sortby = None, sorttype = None):
 
 def get_student_education(userid, conn):
     education = []
-    cursor = conn.execute("select * from education where stu_sid="+userid+" ORDER BY fromdate DESC")
+    cursor = conn.execute("select * from education where stu_sid=%s ORDER BY fromdate DESC", (userid))
     for row in cursor:
         currentrow = dict(row)
         if currentrow["todate"] is None:
@@ -156,3 +156,10 @@ def insert_application(sid, pid, conn):
     except:
         return False
 
+def insert_student(first_name, last_name, sex, username, password, sec_question, sec_answer, conn):
+    try:
+        cursor = conn.execute("insert into student values(DEFAULT,%s,%s,%s,%s,%s,%s,%s)", (first_name, last_name,
+                        sex, username, password,sec_question, sec_answer))
+        return True
+    except:
+        return False

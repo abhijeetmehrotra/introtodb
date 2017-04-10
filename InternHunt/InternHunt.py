@@ -28,7 +28,7 @@ from studentend import user_authenticate, get_applications, get_jobpositions
 from studentend import get_student_education, delete_education, add_education
 from studentend import get_student_experience, delete_experience, add_experience
 from studentend import get_student_skill, delete_skill, add_skill
-from studentend import insert_application
+from studentend import insert_application,insert_student
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -185,6 +185,24 @@ def login_required(role=None):
         return decorated_function
     return wrapper
 
+@app.route('/student/signup', methods=["GET","POST"])
+def studentsignup():
+    if request.method == "GET":
+        return render_template("studentsignup.html")
+    elif request.method == "POST":
+        first_name = request.form['firstname']
+        last_name = request.form['lastname']
+        sex = request.form['sex']
+        username = request.form['username']
+        password = request.form['password']
+        sec_question = request.form['secquestion']
+        sec_answer = request.form['secanswer']
+        result = insert_student(first_name, last_name, sex, username, password, sec_question, sec_answer, g.conn)
+        if result:
+            return redirect("student/login")
+        else:
+            return ("<b>User already exits.</b>",200)
+
 @app.route('/student/login', methods=["GET","POST"])
 def studentlogin():
   if request.method == "GET":
@@ -198,7 +216,7 @@ def studentlogin():
         """
             Store sid and all other stuff in session info
         """
-        session['sid'] = auth[1]
+        session['sid'] = str(auth[1])
         session['role'] = 'student'
         return render_template("studentdashboard.html")
     else:
@@ -212,8 +230,7 @@ def studentlogout():
 @app.route('/student/dashboard', methods=["GET"])
 @login_required(role='student')
 def studentdashboard():
-  userid = "1"
-  applications = get_applications(userid, g.conn)
+  applications = get_applications(session["sid"], g.conn)
   print applications
   context = dict(data=applications)
   return render_template("studentdashboard.html", **context)
@@ -223,9 +240,8 @@ valid_sorting = ["position", "company", "startdate"]
 @app.route('/student/profile/education', methods=["GET","POST"])
 @login_required(role='student')
 def studentprofile():
-    userid = "1"
     if request.method == "GET":
-        studenteducation = get_student_education(userid, g.conn)
+        studenteducation = get_student_education(session["sid"], g.conn)
         context = dict(data=studenteducation)
         return render_template("studenteducation.html", **context)
     elif request.method == "POST":
@@ -235,8 +251,7 @@ def studentprofile():
         fromdate = request.form['fromdate']
         todate = request.form['todate']
         description = request.form['description']
-        sid = "1"
-        add_education(university, degree, major, fromdate, todate, description, sid, g.conn)
+        add_education(university, degree, major, fromdate, todate, description, session["sid"], g.conn)
         return redirect('/student/profile/education')
 
 @app.route('/student/profile/deleteeducation', methods=["POST"])
@@ -246,16 +261,14 @@ def deleteeducation():
     degree = request.json['degree']
     major = request.json['major']
     fromdate = request.json['fromdate']
-    sid = request.json['sid']
-    delete_education(university, degree, major, fromdate, sid, g.conn)
+    delete_education(university, degree, major, fromdate, session["sid"], g.conn)
     return ('DELETED', 200)
 
 @app.route('/student/profile/experience', methods=["GET","POST"])
 @login_required(role='student')
 def studentexperience():
-    userid = "1"
     if request.method == "GET":
-        studentexperience = get_student_experience(userid, g.conn)
+        studentexperience = get_student_experience(session["sid"], g.conn)
         context = dict(data=studentexperience)
         return render_template("studentexperience.html", **context)
     elif request.method == "POST":
@@ -264,8 +277,7 @@ def studentexperience():
         fromdate = request.form['fromdate']
         todate = request.form['todate']
         description = request.form['description']
-        sid = "1"
-        add_education(company, position, fromdate, todate, description, sid, g.conn)
+        add_experience(company, position, fromdate, todate, description, session["sid"], g.conn)
         return redirect('/student/profile/experience')
 
 @app.route('/student/profile/deleteexperience', methods=["POST"])
@@ -274,31 +286,27 @@ def deleteexperience():
     company = request.json['company']
     position = request.json['position']
     fromdate = request.json['fromdate']
-    sid = request.json['sid']
-    delete_experience(company, position, fromdate, sid, g.conn)
+    delete_experience(company, position, fromdate, session["sid"], g.conn)
     return ('DELETED', 200)
 
 @app.route('/student/profile/skills', methods=["GET","POST"])
 @login_required(role='student')
 def studentskills():
-    userid = "1"
     if request.method == "GET":
-        studentskills = get_student_skill(userid, g.conn)
+        studentskills = get_student_skill(session["sid"], g.conn)
         context = dict(data=studentskills)
         return render_template("studentskills.html", **context)
     elif request.method == "POST":
         skill = request.form['skill']
         proficiency = request.form['proficiency']
-        sid = "1"
-        add_skill(skill, proficiency, sid, g.conn)
+        add_skill(skill, proficiency, session["sid"], g.conn)
         return redirect('/student/profile/skills')
 
 @app.route('/student/profile/deleteskill', methods=["POST"])
 @login_required(role='student')
 def deleteskill():
     skill = request.json['skill']
-    sid = request.json['sid']
-    delete_skill(skill, sid, g.conn)
+    delete_skill(skill, session["sid"], g.conn)
     return ('DELETED', 200)
 
 @app.route('/student/jobs', methods=["GET"])
@@ -317,7 +325,6 @@ def studentgetopenjobs():
 @app.route('/student/apply', methods=["GET","POST"])
 @login_required(role='student')
 def studentapply():
-    sid = "1"
     if request.method == "GET":
         pid = request.args.get('pid')
         if pid is not None:
@@ -330,12 +337,12 @@ def studentapply():
         if 'resume' in request.files:
             data_file = request.files['resume']
             pid = request.form["pid"]
-            submitted = insert_application(sid, pid, g.conn)
+            submitted = insert_application(session["sid"], pid, g.conn)
             if submitted == True:
                 conn = S3Connection(aws_cred["ACCESS_KEY"],aws_cred["SECRET_KEY"])
                 bucket = conn.get_bucket(aws_cred["BUCKET_NAME"])
                 k = Key(bucket)
-                k.key = sid+"_"+pid+'.pdf'
+                k.key = session["sid"]+"_"+pid+'.pdf'
                 # k.set_contents_from_file(data_file)
                 k.set_contents_from_string(data_file.read())
                 return ('Application Accepted<br/><a href="/student/dashboard">Go back to dashboard</a>', 200)
