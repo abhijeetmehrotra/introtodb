@@ -37,6 +37,10 @@ def get_applicants(hid, conn, pid, status):
             skills.append(dict(row5))
         student['skills'] = skills
 
+        query6 = "select first_name, last_name from student where sid =%s"
+        cursor6 = conn.execute(query6, str(student.get("sid")))
+        student['name'] = dict(cursor6.fetchone())
+
         applicants.append(student)
 
     return applicants

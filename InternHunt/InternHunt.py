@@ -383,6 +383,11 @@ def recruiterlogin():
         else:
             return redirect("/recruiter/login")
 
+@app.route('/recruiter/logout', methods=["GET"])
+def recruiterlogout():
+    session.clear()
+    return redirect("/recruiter/login")
+
 @app.route('/recruiter/createjob', methods=["GET","POST"])
 @login_required(role='recruiter')
 def createjobrender():

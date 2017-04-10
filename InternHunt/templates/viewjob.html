@@ -25,7 +25,7 @@
 </nav>
 
 <div class="container-fluid" style="width: 95%">
- <h2>Position details:</h2>
+ <h3>Position details:</h3>
 
     {% for position in data.positiondata %}
         <div class="row row-striped" style="padding: 12px">
@@ -64,10 +64,11 @@
         </div>
     {% endfor %}
 
-    <h2>Open Applications:</h2>
+    <h3>Open Applications:</h3>
     {% for person in data.applicants %}
-            <div class="row" style="border:1px solid black;">
-                  <h3>Education</h3>
+            <div class="row" style="border:1px solid black; margin-top: 8px">
+                <h4> {{ person.name.first_name}} {{ person.name.last_name}}</h4>
+                  <h4>Education</h4>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -97,7 +98,7 @@
                 </div>
                 {% endfor %}
 
-                 <h3>Experience</h3>
+                 <h4>Experience</h4>
                 {% for experience in person.experience %}
                 <div style="margin: 8px; padding: 12px; background: #efefef">
                     <div class="row">
@@ -126,7 +127,7 @@
               </div>
               {% endfor %}
 
-              <h3>Skills</h3>
+              <h4>Skills</h4>
               {% for skills in person.skills %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -166,11 +167,11 @@
             </div>
     {% endfor %}
 
-<h2>Accepted Applications:</h2>
+<h3>Accepted Applications:</h3>
     {% for person in data.accepted %}
-        <div class="row" style="border:1px solid black;">
-
-                  <h3>Education</h3>
+        <div class="row" style="border:1px solid black; margin-top: 8px">
+                  <h4> {{ person.name.first_name}} {{ person.name.last_name}}</h4>
+                  <h4>Education</h4>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -200,7 +201,7 @@
                 </div>
                 {% endfor %}
 
-                 <h3>Experience</h3>
+                 <h4>Experience</h4>
                 {% for experience in person.experience %}
                 <div style="margin: 8px; padding: 12px; background: #efefef">
                     <div class="row">
@@ -229,7 +230,7 @@
               </div>
               {% endfor %}
 
-              <h3>Skills</h3>
+              <h4>Skills</h4>
               {% for skills in person.skills %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -246,11 +247,11 @@
             </div>
     {% endfor %}
 
-<h2>Rejected Applications:</h2>
+<h3>Rejected Applications:</h3>
     {% for person in data.rejected %}
-            <div class="row" style="border:1px solid black;">
-
-                  <h3>Education</h3>
+            <div class="row" style="border:1px solid black; margin-top: 8px">
+                  <h4> {{ person.name.first_name}} {{ person.name.last_name}}</h4>
+                  <h4>Education</h4>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -280,7 +281,7 @@
                 </div>
                 {% endfor %}
 
-                 <h3>Experience</h3>
+                 <h4>Experience</h4>
                 {% for experience in person.experience %}
                 <div style="margin: 8px; padding: 12px; background: #efefef">
                     <div class="row">
@@ -309,7 +310,7 @@
               </div>
               {% endfor %}
 
-              <h3>Skills</h3>
+              <h4>Skills</h4>
               {% for skills in person.skills %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
