@@ -4,7 +4,7 @@ def authenticate_recruiter(username, password, conn):
     if record is None:
         return [False]
     elif record["password"] == password:
-        print(record)
+        # print(record)
         return [True, record["hid"]]
     else:
         return [False]

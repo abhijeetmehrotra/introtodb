@@ -240,7 +240,7 @@ def studentlogout():
 @login_required(role='student')
 def studentdashboard():
   applications = get_applications(session["sid"], g.conn)
-  print applications
+  # print applications
   context = dict(data=applications)
   return render_template("studentdashboard.html", **context)
 
@@ -327,7 +327,7 @@ def studentgetopenjobs():
         jobpositions = get_jobpositions(g.conn, sortby, sorttype)
     else:
         jobpositions = get_jobpositions(g.conn)
-    print jobpositions
+    # print jobpositions
     context = dict(data=jobpositions)
     return render_template("studentjobpositions.html", **context)
 
@@ -431,7 +431,6 @@ def viewjobs():
 @login_required(role='recruiter')
 def viewapp():
     hid = session["hid"]
-    print hid
     jobpositions = get_jobs(hid, g.conn, 'fromdate')
     context = dict(data=jobpositions)
     return render_template("viewapplication.html", **context)
