@@ -66,7 +66,7 @@ def get_jobs(hid, conn, sortby):
         #job_info.append(dict(row))
         if row["pid"] not in pos_countinfo.keys():
             pos_countinfo[row["pid"]] = dict()
-            pos_countinfo[row["pid"]][row["status"]] = row["count"]
+        pos_countinfo[row["pid"]][row["status"]] = row["count"]
 
     if sortby is not None:
         sorting_type = sortby
