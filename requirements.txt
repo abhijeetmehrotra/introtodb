@@ -1,0 +1,7 @@
+SQlAlchemy
+Flask
+boto
+Flask-Session
+Flask-Redis
+psycopg2
+redis
