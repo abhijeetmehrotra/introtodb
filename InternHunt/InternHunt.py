@@ -439,7 +439,7 @@ def modify_job():
 def modify_posting():
     pid = request.form["pid"]
     hid = session["hid"]
-    query1 = "update jobposition set status ='CLOSED' where pid=%s and pid in (select pid from jobposition where hr_hid=%s)"
+    query1 = "update jobposition set status ='CLOSED' where pid=%s and hr_hid=%s"
     cursor1 = g.conn.execute(query1, (pid, hid))
     return redirect("/recruiter/viewjobs")
 
