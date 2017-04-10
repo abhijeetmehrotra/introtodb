@@ -2,6 +2,7 @@
 def authenticate_company(username, password, conn):
     cursor = conn.execute("SELECT * FROM company WHERE email = %s",(username))
     record = cursor.fetchone()
+    cursor.close()
     if record is None:
         return [False]
     elif record["password"] == password:
@@ -21,7 +22,7 @@ def get_hr_and_jobs(cid, conn):
         if row["pid"] not in pos_countinfo.keys():
             pos_countinfo[row["pid"]] = dict()
             pos_countinfo[row["pid"]][row["status"]] = row["count"]
-
+    cursor1.close()
 
     cursor = conn.execute("SELECT hid, (first_name || ' ' || last_name) as name FROM hr WHERE com_cid = %s",(cid))
     for row in cursor:
@@ -51,7 +52,7 @@ def get_hr_and_jobs(cid, conn):
             job['total'] = job['accept'] + job['reject'] + job['pending']
 
         jobs.append(job)
-
+    cursor.close()
     result = {"hr":hrs, "jobs":jobs}
     return result
 
@@ -63,9 +64,3 @@ def change_hr(hid, pid, cid, conn):
     finally:
         cursor.close()
         return
-
-def firehrfromalljobs(hid, cid, conn):
-    try:
-        cursor = conn.execute("UPDATE jobposition SET hr_hid=NULL where hr_hid=%s and com_cid=%s",(hid,cid))
-    except Exception as err:
-        print err

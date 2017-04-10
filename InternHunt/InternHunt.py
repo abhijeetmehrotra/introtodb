@@ -33,8 +33,7 @@ from studentend import insert_application,insert_student
 from recruiterend import authenticate_recruiter, get_jobs, get_job
 
 
-from companyend import authenticate_company, get_hr_and_jobs, change_hr, firehrfromalljobs
-
+from companyend import authenticate_company, get_hr_and_jobs, change_hr
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
