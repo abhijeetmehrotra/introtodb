@@ -30,6 +30,9 @@ from studentend import get_student_experience, delete_experience, add_experience
 from studentend import get_student_skill, delete_skill, add_skill
 from studentend import insert_application,insert_student
 
+import recruiterend, utils
+
+
 from companyend import authenticate_company, get_hr_and_jobs
 
 
@@ -352,6 +355,68 @@ def studentapply():
                 return('Already applied<br/><a href="/student/dashboard">Go back to dashboard</a>', 200)
         else:
             return ('File not uploaded', 400)
+
+
+"""
+Implementation for Recruiter/HR end
+"""
+
+@app.route('/recruiter/login', methods=["GET"])
+def recruiterlogin():
+  return render_template("recruiterlogin.html")
+
+@app.route('/recruiter/login', methods=["POST"])
+def verify_recruiter():
+  if request.method == 'POST':
+    username = request.form['username']
+    password = request.form['password']
+    recruiterend.authenticate_recruiter(username, password, g.conn)
+
+@app.route('/recruiter/createjob', methods=["GET"])
+def createjobrender():
+  return render_template("createapplication.html")
+
+@app.route('/recruiter/createjob', methods=["POST"])
+def create_job():
+      type = request.form["title"]
+      description = request.form["description"]
+      fromDate = request.form["fromDate"]
+      toDate = request.form["toDate"]
+      status = "OPEN"
+      hr_hid = 1
+      com_cid = 2
+
+      query1 = "insert into jobposition values(DEFAULT, %s, %s, %s, %s, %s, %s, %s)"
+
+      cursor1 = g.conn.execute(query1,(type, status, description, fromDate, toDate, hr_hid, com_cid))
+
+      return redirect("/recruiter/viewjobs", code=302)
+
+@app.route('/recruiter/appaction', methods=["POST"])
+def modify_job():
+
+    pid = request.form["pid"]
+    sid = request.form["sid"]
+    action = request.form["action"]
+    query1 = "update application set status =%s where pid=%s and sid=%s"
+    cursor1 = g.conn.execute(query1, (action, pid, sid))
+    return redirect("/recruiter/jobs?pid=1", code=302)
+
+@app.route('/recruiter/jobs', methods=["GET"])
+def viewjobs():
+    pid = request.args.get('pid')
+    jobposition = utils.get_job(g.conn, pid)
+    context = dict(data=jobposition)
+    return render_template("viewjob.html", **context)
+
+@app.route('/recruiter/viewjobs', methods=["GET"])
+def viewapp():
+    jobpositions = utils.get_jobs(g.conn, 'fromdate')
+    context = dict(data=jobpositions)
+    return render_template("viewapplication.html", **context)
+
+
+
 
 
 """
