@@ -66,8 +66,15 @@
 
     <h3>Open Applications:</h3>
     {% for person in data.applicants %}
-            <div class="row" style="border:1px solid black; margin-top: 8px">
-                <h4> {{ person.name.first_name}} {{ person.name.last_name}}</h4>
+            <div class="row" style="border:1px solid black; margin-top: 16px ; padding: 16px">
+                <div class="row" style="margin-top: 8px">
+                     <div class="col-sm-6">
+                         <h4>{{ person.name.first_name}} {{ person.name.last_name}}</h4>
+                    </div>
+                    <div class="col-sm-6">
+                        <a class="btn btn-primary" href="{{ person.resume }}">Resume</a>
+                    </div>
+                </div>
                   <h4>Education</h4>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
@@ -80,14 +87,14 @@
                           </div>
 
                       </div>
-                      <div class="row">
-                          <div class="col-sm-6">
-                              From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
-                          </div>
-                      <div class="col-sm-6">
-                          To: <span class="text-info"><b>{{ education.todate }}</b></span>
-                      </div>
-                  </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                               From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
+                             </div>
+                             <div class="col-sm-6">
+                               To: <span class="text-info"><b>{{ education.todate }}</b></span>
+                             </div>
+                       </div>
                   <br>
                           <div class="row">
                               <div class="col-sm-12">
@@ -169,8 +176,15 @@
 
 <h3>Accepted Applications:</h3>
     {% for person in data.accepted %}
-        <div class="row" style="border:1px solid black; margin-top: 8px">
-                  <h4> {{ person.name.first_name}} {{ person.name.last_name}}</h4>
+        <div class="row" style="border:1px solid black; margin-top: 16px ; padding: 16px">
+                <div class="row" style="margin-top: 8px">
+                     <div class="col-sm-6">
+                         <h4>{{ person.name.first_name}} {{ person.name.last_name}}</h4>
+                    </div>
+                    <div class="col-sm-6">
+                        <a class="btn btn-primary" href="{{ person.resume }}">Resume</a>
+                    </div>
+                </div>
                   <h4>Education</h4>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
@@ -249,8 +263,15 @@
 
 <h3>Rejected Applications:</h3>
     {% for person in data.rejected %}
-            <div class="row" style="border:1px solid black; margin-top: 8px">
-                  <h4> {{ person.name.first_name}} {{ person.name.last_name}}</h4>
+        <div class="row" style="border:1px solid black; margin-top: 16px ; padding: 16px">
+                <div class="row" style="margin-top: 8px">
+                     <div class="col-sm-6">
+                         <h4>{{ person.name.first_name}} {{ person.name.last_name}}</h4>
+                    </div>
+                    <div class="col-sm-6">
+                        <a class="btn btn-primary" href="{{ person.resume }}">Resume</a>
+                    </div>
+                </div>
                   <h4>Education</h4>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
