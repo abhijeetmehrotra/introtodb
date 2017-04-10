@@ -231,11 +231,24 @@ def createjobrender():
 
 @app.route('/recruiter/createjob', methods=["POST"])
 def create_job():
-  title = request.form["title"]
-  description = request.form["description"]
-  fromDate = request.form["fromDate"]
-  toDate = request.form["toDate"]
-  print (title, description, fromDate, toDate)
+      print "aaaaaa"
+      type = request.form["title"]
+      print type
+      description = request.form["description"]
+      print description
+      fromDate = request.form["fromDate"]
+      print fromDate
+      toDate = request.form["toDate"]
+      print toDate
+      status = "OPEN"
+      hr_hid = 1
+      com_cid = 2
+
+      query1 = "insert into jobposition values(DEFAULT, %s, %s, %s, %s, %s, %s, %s)"
+
+      cursor1 = g.conn.execute(query1,(type, status, description, fromDate, toDate, hr_hid, com_cid))
+
+      return redirect("/recruiter/viewjobs", code=302)
 
 @app.route('/recruiter/appaction', methods=["POST"])
 def modify_job():
@@ -243,39 +256,71 @@ def modify_job():
     pid = request.form["pid"]
     sid = request.form["sid"]
     action = request.form["action"]
-    query1 = "update application set status = '"+ action+"' where pid="+pid+" and sid="+sid
-    cursor1 = g.conn.execute(query1)
+    query1 = "update application set status =%s where pid=%s and sid=%s"
+    cursor1 = g.conn.execute(query1, (action, pid, sid))
     return redirect("/recruiter/jobs?pid=1", code=302)
 
 @app.route('/recruiter/jobs', methods=["GET"])
 def viewjobs():
     pid = request.args.get('pid')
     jobposition = get_job(g.conn, pid)
-    # print jobposition
+    print jobposition
     context = dict(data=jobposition)
     return render_template("viewjob.html", **context)
 
 def get_job(conn, pid):
-    query1 = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where pid = "+pid
-    cursor1 = conn.execute(query1)
+    query1 = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where pid =%s"
+    cursor1 = conn.execute(query1, pid)
     openjobpositions = []
     for row in cursor1:
         openjobpositions.append(dict(row))
 
-    query2 = "select pid, sid, resume, status from application where status = 'PENDING' and pid = "+pid
-    cursor2 = conn.execute(query2)
+    query2 = "select pid, sid, resume, status from application where status = 'PENDING' and pid =%s "
+    cursor2 = conn.execute(query2, pid)
     applicants = []
     for row in cursor2:
+        student = dict(row)
+        print "SID"
+        print student
+        print student.get("sid")
+        query3 = "select * from education where stu_sid =%s"
+        cursor3 = conn.execute(query3, str(student.get("sid")))
+        education = []
+        for row3 in cursor3:
+            print "EDUCA"
+            print row
+            education.append(dict(row3))
+        student['education'] = education
 
-        applicants.append(dict(row))
+        query4 = "select * from experience where stu_sid =%s"
+        cursor4 = conn.execute(query4, str(student.get("sid")))
+        experience = []
+        for row4 in cursor4:
+            experience.append(dict(row4))
+            print "STUDENT"
+            print student
+        student['experience'] = experience
 
+        query5 = "select * from skills where stu_sid =%s"
+        cursor5 = conn.execute(query5, str(student.get("sid")))
+        skills = []
+        for row5 in cursor5:
+            skills.append(dict(row5))
+            print "STUDENT"
+            print student
+        student['skills'] = skills
 
-    return {'openpositions':openjobpositions, 'applicants':applicants}
+        applicants.append(student)
+
+    print "OPEN"
+    print openjobpositions
+
+    return {'positiondata':openjobpositions, 'applicants':applicants}
 
 @app.route('/recruiter/viewjobs', methods=["GET"])
 def viewapp():
     jobpositions = get_jobs(g.conn, 'fromdate')
-    print jobpositions
+    # print jobpositions
     context = dict(data=jobpositions)
     return render_template("viewapplication.html", **context)
 

@@ -20,7 +20,7 @@
 <div class="container-fluid" style="width: 95%">
  <h2>Position details:</h2>
 
-    {% for position in data.postiondata %}
+    {% for position in data.positiondata %}
         <div class="row row-striped" style="padding: 12px">
             <div class="row">
                 <div class="col-sm-4">
@@ -61,54 +61,98 @@
     {% for person in data.applicants %}
         <div class="row row-striped" style="padding: 12px">
             <div class="row">
-{#                <div class="col-sm-4">#}
-{#                    Position: <span class="text-primary"><b>{{ position.type }}</b></span>#}
-{#                </div>#}
-{#                <div class="col-sm-4">#}
-{#                    Company: <span class="text-info">{{ position.company_name }}</span>#}
-{#                </div>#}
-{#                <div class="col-sm-4">#}
-{#                    Company Size: {{ position.size }}#}
-{#                </div>#}
-                  <div class="col-sm-4">
-                      SID: <span class="text-primary"><b>{{ person.sid }}</b></span>
-                      PID: <span class="text-primary"><b>{{ person.pid }}</b></span>
-            </div>
-{#            <div class="row">#}
-{#                <div class="col-sm-4">#}
-{#                    From Data: {{ position.fromdate }}#}
-{#                </div>#}
-{#                <div class="col-sm-4">#}
-{#                    To Date:#}
-{#                    {% if position.todate == None %}#}
-{#                        Not Specified#}
-{#                    {% else %}#}
-{#                        {{ position.todate }}#}
-{#                    {% endif %}#}
-{#                </div>#}
-{#                <div class="col-sm-4">#}
-{#                    Industry: {{ position.industry }}#}
-{#                </div>#}
-{#            </div>#}
-{#            <div class="row">#}
-{#                <div class="col-sm-8">#}
-{#                    Job Description: {{ position.description }}#}
-{#                </div>#}
-                <div class="col-sm-4">
+
+                  {% for education in person.education %}
+                  <div style="margin: 8px; padding: 12px; background: #efefef">
+                      <div class="row">
+                          <div class="col-sm-6">
+                              University: <span class="text-primary"><b>{{ education.university }}</b></span>
+                          </div>
+                          <div class="col-sm-5">
+                              Degree-Major: <span class="text-info"><b>{{ education.degree }} {{ education.major }}</b></span>
+                          </div>
+
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-6">
+                              From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
+                          </div>
+                      <div class="col-sm-6">
+                          To: <span class="text-info"><b>{{ education.todate }}</b></span>
+                      </div>
+                  </div>
+                  <br>
+                          <div class="row">
+                              <div class="col-sm-12">
+                                  Description:</br>
+                                  {{ education.description }}
+                              </div>
+                          </div>
+                </div>
+                {% endfor %}
+
+                {% for experience in person.experience %}
+                <div style="margin: 8px; padding: 12px; background: #efefef">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            Company: <span class="text-primary"><b>{{ experience.company_name }}</b></span>
+                        </div>
+                        <div class="col-sm-5">
+                            Position: <span class="text-info"><b>{{ experience.position }}</b></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            From: <span class="text-primary"><b>{{ experience.fromdate }}</b></span>
+                        </div>
+                        <div class="col-sm-6">
+                            To: <span class="text-info"><b>{{ experience.todate }}</b></span>
+                        </div>
+                    </div>
+              <br>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            Description:</br>
+                            {{ experience.description }}
+                        </div>
+                    </div>
+              </div>
+              {% endfor %}
+              {% for skills in person.skills %}
+                  <div style="margin: 8px; padding: 12px; background: #efefef">
+                      <div class="row">
+                          <div class="col-sm-6">
+                              Skill: <span class="text-primary"><b>{{ skills.skill_name }}</b></span>
+                          </div>
+                          <div class="col-sm-5">
+                              Proficiency: <span class="text-info"><b>{{ skills.proficiency }}</b></span>
+                          </div>
+                     </div>
+                 </div>
+              {% endfor %}
+
+
+                <div class="row">
+                      <div class="col-sm-4">
+                      </div>
+                      <div class="col-sm-2">
                       <form action="/recruiter/appaction" method="post">
                            <input type="hidden" name="pid" value="{{person.pid}}">
                            <input type="hidden" name="sid" value="{{person.sid}}">
                            <input type="hidden" name="action" value="ACCEPT">
                            <input type="submit" class="btn btn-info" value="Accept">
                       </form>
+                      </div>
+                      <div class="col-sm-2">
                       <form action="/recruiter/appaction" method="post">
                            <input type="hidden" name="pid" value="{{person.pid}}">
                            <input type="hidden" name="sid" value="{{person.sid}}">
                            <input type="hidden" name="action" value="REJECT">
                            <input type="submit" class="btn btn-info" value="Reject">
                       </form>
-
-{#                    <a href="/recruiter/jobs?={{ position.pid }}" target="_blank" class="btn btn-primary">View</a>#}
+                      </div>
+                       <div class="col-sm-4">
+                      </div>
                 </div>
             </div>
         </div>
