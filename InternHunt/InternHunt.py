@@ -225,6 +225,7 @@ def studentlogin():
         """
             Store sid and all other stuff in session info
         """
+        session.clear()
         session['sid'] = str(auth[1])
         session['role'] = 'student'
         return redirect("/student/dashboard")
@@ -377,6 +378,7 @@ def recruiterlogin():
             """
                 Store hid and all other stuff in session info
             """
+            session.clear()
             session['hid'] = str(auth[1])
             session['role'] = 'recruiter'
             return redirect("/recruiter/viewjobs")
@@ -440,7 +442,6 @@ Implementation for Company end
 """
 
 @app.route('/company/login', methods=["GET","POST"])
-@login_required(role='company')
 def companylogin():
   if request.method == "GET":
     return render_template("companylogin.html")
@@ -453,9 +454,10 @@ def companylogin():
         """
             Store sid and all other stuff in session info
         """
+        session.clear()
         session['cid'] = str(auth[1])
         session['role'] = 'company'
-        return render_template("companydashboard.html")
+        return redirect("/company/dashboard")
     else:
         return redirect("/company/login")
 
@@ -468,7 +470,7 @@ def companylogout():
 @login_required(role='company')
 def companydashboard():
   hr_and_jobs = get_hr_and_jobs(session["cid"], g.conn)
-  context = dict(data=hr_and_jobs)
+  context = hr_and_jobs
   return render_template("companydashboard.html", **context)
 
 if __name__ == "__main__":

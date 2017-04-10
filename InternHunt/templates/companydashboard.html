@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Dashboard</title>
+    <title>Company Dashboard</title>
     <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -18,12 +18,8 @@
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">Dashboard</a></li>
-        <li><a href="jobs">Jobs</a></li>
       </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="profile/education">Education</a></li>
-      <li><a href="profile/experience">Experience</a></li>
-      <li><a href="profile/skills">Skills</a></li>
       <li><a href="/student/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
     </ul>
     </div>
@@ -31,37 +27,50 @@
 </nav>
 
 <div class="container-fluid" style="width:95%">
-<h2>Your Current Applications</h2>
+<h3>Your HRs</h3>
 <table class="table table-striped">
     <tr>
-        <th>Company</th>
-        <th>Position</th>
-        <th>Resume</th>
-        <th>Application Status</th>
+        <th>HR</th>
+        <th></th>
     </tr>
-    {% for n in data %}
+    {% for person in hr %}
     <tr>
         <td>
-            {{ n.company_name }}
+            {{ person.first_name }} {{ person.last_name }}
         </td>
         <td>
-            {{ n.type }}
-        </td>
-        <td>
-            <a href="{{ n.resume}}"><u>Download</u></a>
-        </td>
-        <td>
-            {% if n.status == "PENDING" %}
-                <span class="text-primary"><b> {{ n.status }} </b></span>
-            {% elif n.status == "ACCEPT" %}
-                <span class="text-success"><b> {{ n.status }} </b></span>
-            {% else %}
-                <span class="text-danger"><b> {{ n.status }}</b></span>
-            {% endif %}
+            <form action="POST" action="deletehr" >
+                <input type="hidden" name="hid" />
+            </form>
         </td>
     </tr>
     {% endfor %}
 </table>
+<br>
+<br>
+<h3>Your Jobs</h3>
+    {% for job in jobs %}
+    <div class="row-striped" style="padding:16px; background-color: #efefef; margin-top: 16px">
+        <div class="row">
+            <div class="col-sm-6"><b>Position:</b> {{ job.type }}</div>
+            <div class="col-sm-6">
+                {% if job.status == "CLOSED" %}
+                    <span class="text-danger"><b> {{ job.status }} </b></span>
+                {% elif job.status == "OPEN" %}
+                    <span class="text-success"><b> {{ job.status }} </b></span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6"><b>Description:</b><br>
+            {{ job.description }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6"><b>From Date:</b> {{ job.fromdate }}</div>
+            <div class="col-sm-6"><b>To Date:</b> {{ job.todate }}</div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
 
 </body>
