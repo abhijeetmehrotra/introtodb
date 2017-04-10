@@ -1,5 +1,7 @@
 # introtodb
 
+## Intern Hunt
+
 Part 1.3
 
 Name and UNI:
@@ -27,6 +29,7 @@ Students can set their experience profile.
 
 Recruiter can see all the jobs posted by him/her.
 Recruiter can post new jobs.
+Recruiter can close existing jobs.
 Rectruiter can see full student profile and accept/reject applicants.
 
 
