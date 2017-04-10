@@ -57,11 +57,12 @@
         </div>
     {% endfor %}
 
-    <h2>Applicants:</h2>
+    <h2>Open Applications:</h2>
     {% for person in data.applicants %}
         <div class="row row-striped" style="padding: 12px">
             <div class="row">
 
+                  <h3>Education</h3>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -91,6 +92,7 @@
                 </div>
                 {% endfor %}
 
+                 <h3>Experience</h3>
                 {% for experience in person.experience %}
                 <div style="margin: 8px; padding: 12px; background: #efefef">
                     <div class="row">
@@ -118,6 +120,8 @@
                     </div>
               </div>
               {% endfor %}
+
+              <h3>Skills</h3>
               {% for skills in person.skills %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
                       <div class="row">
@@ -154,6 +158,170 @@
                        <div class="col-sm-4">
                       </div>
                 </div>
+            </div>
+        </div>
+    {% endfor %}
+
+<h2>Accepted Applications:</h2>
+    {% for person in data.accepted %}
+        <div class="row row-striped" style="padding: 12px">
+            <div class="row">
+
+                  <h3>Education</h3>
+                  {% for education in person.education %}
+                  <div style="margin: 8px; padding: 12px; background: #efefef">
+                      <div class="row">
+                          <div class="col-sm-6">
+                              University: <span class="text-primary"><b>{{ education.university }}</b></span>
+                          </div>
+                          <div class="col-sm-5">
+                              Degree-Major: <span class="text-info"><b>{{ education.degree }} {{ education.major }}</b></span>
+                          </div>
+
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-6">
+                              From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
+                          </div>
+                      <div class="col-sm-6">
+                          To: <span class="text-info"><b>{{ education.todate }}</b></span>
+                      </div>
+                  </div>
+                  <br>
+                          <div class="row">
+                              <div class="col-sm-12">
+                                  Description:</br>
+                                  {{ education.description }}
+                              </div>
+                          </div>
+                </div>
+                {% endfor %}
+
+                 <h3>Experience</h3>
+                {% for experience in person.experience %}
+                <div style="margin: 8px; padding: 12px; background: #efefef">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            Company: <span class="text-primary"><b>{{ experience.company_name }}</b></span>
+                        </div>
+                        <div class="col-sm-5">
+                            Position: <span class="text-info"><b>{{ experience.position }}</b></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            From: <span class="text-primary"><b>{{ experience.fromdate }}</b></span>
+                        </div>
+                        <div class="col-sm-6">
+                            To: <span class="text-info"><b>{{ experience.todate }}</b></span>
+                        </div>
+                    </div>
+              <br>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            Description:</br>
+                            {{ experience.description }}
+                        </div>
+                    </div>
+              </div>
+              {% endfor %}
+
+              <h3>Skills</h3>
+              {% for skills in person.skills %}
+                  <div style="margin: 8px; padding: 12px; background: #efefef">
+                      <div class="row">
+                          <div class="col-sm-6">
+                              Skill: <span class="text-primary"><b>{{ skills.skill_name }}</b></span>
+                          </div>
+                          <div class="col-sm-5">
+                              Proficiency: <span class="text-info"><b>{{ skills.proficiency }}</b></span>
+                          </div>
+                     </div>
+                 </div>
+              {% endfor %}
+            
+            </div>
+        </div>
+    {% endfor %}
+
+<h2>Rejected Applications:</h2>
+    {% for person in data.rejected %}
+        <div class="row row-striped" style="padding: 12px">
+            <div class="row">
+
+                  <h3>Education</h3>
+                  {% for education in person.education %}
+                  <div style="margin: 8px; padding: 12px; background: #efefef">
+                      <div class="row">
+                          <div class="col-sm-6">
+                              University: <span class="text-primary"><b>{{ education.university }}</b></span>
+                          </div>
+                          <div class="col-sm-5">
+                              Degree-Major: <span class="text-info"><b>{{ education.degree }} {{ education.major }}</b></span>
+                          </div>
+
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-6">
+                              From: <span class="text-primary"><b>{{ education.fromdate }}</b></span>
+                          </div>
+                      <div class="col-sm-6">
+                          To: <span class="text-info"><b>{{ education.todate }}</b></span>
+                      </div>
+                  </div>
+                  <br>
+                          <div class="row">
+                              <div class="col-sm-12">
+                                  Description:</br>
+                                  {{ education.description }}
+                              </div>
+                          </div>
+                </div>
+                {% endfor %}
+
+                 <h3>Experience</h3>
+                {% for experience in person.experience %}
+                <div style="margin: 8px; padding: 12px; background: #efefef">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            Company: <span class="text-primary"><b>{{ experience.company_name }}</b></span>
+                        </div>
+                        <div class="col-sm-5">
+                            Position: <span class="text-info"><b>{{ experience.position }}</b></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            From: <span class="text-primary"><b>{{ experience.fromdate }}</b></span>
+                        </div>
+                        <div class="col-sm-6">
+                            To: <span class="text-info"><b>{{ experience.todate }}</b></span>
+                        </div>
+                    </div>
+              <br>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            Description:</br>
+                            {{ experience.description }}
+                        </div>
+                    </div>
+              </div>
+              {% endfor %}
+
+              <h3>Skills</h3>
+              {% for skills in person.skills %}
+                  <div style="margin: 8px; padding: 12px; background: #efefef">
+                      <div class="row">
+                          <div class="col-sm-6">
+                              Skill: <span class="text-primary"><b>{{ skills.skill_name }}</b></span>
+                          </div>
+                          <div class="col-sm-5">
+                              Proficiency: <span class="text-info"><b>{{ skills.proficiency }}</b></span>
+                          </div>
+                     </div>
+                 </div>
+              {% endfor %}
+
             </div>
         </div>
     {% endfor %}
