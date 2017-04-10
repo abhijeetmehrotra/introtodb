@@ -66,9 +66,7 @@
 
     <h2>Open Applications:</h2>
     {% for person in data.applicants %}
-        <div class="row row-striped" style="padding: 12px">
-            <div class="row">
-
+            <div class="row" style="border:1px solid black;">
                   <h3>Education</h3>
                   {% for education in person.education %}
                   <div style="margin: 8px; padding: 12px; background: #efefef">
@@ -166,13 +164,11 @@
                       </div>
                 </div>
             </div>
-        </div>
     {% endfor %}
 
 <h2>Accepted Applications:</h2>
     {% for person in data.accepted %}
-        <div class="row row-striped" style="padding: 12px">
-            <div class="row">
+        <div class="row" style="border:1px solid black;">
 
                   <h3>Education</h3>
                   {% for education in person.education %}
@@ -248,13 +244,11 @@
               {% endfor %}
 
             </div>
-        </div>
     {% endfor %}
 
 <h2>Rejected Applications:</h2>
     {% for person in data.rejected %}
-        <div class="row row-striped" style="padding: 12px">
-            <div class="row">
+            <div class="row" style="border:1px solid black;">
 
                   <h3>Education</h3>
                   {% for education in person.education %}
@@ -329,7 +323,6 @@
                  </div>
               {% endfor %}
 
-            </div>
         </div>
     {% endfor %}
 
