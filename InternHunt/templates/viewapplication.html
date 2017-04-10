@@ -39,6 +39,7 @@
 
     {% for position in data.openpositions %}
         <div class="row row-striped" style="padding: 12px">
+        {{ position.accept }},{{ position.reject }},{{ position.pending }}
             <div class="row">
                 <div class="col-sm-4">
                     Position: <span class="text-primary"><b>{{ position.type }}</b></span>

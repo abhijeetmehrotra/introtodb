@@ -16,21 +16,21 @@ def get_applicants(hid, conn, pid, status):
     applicants = []
     for row in cursor2:
         student = dict(row)
-        query3 = "select * from education where stu_sid =%s"
+        query3 = "select * from education where stu_sid =%s order by fromdate DESC"
         cursor3 = conn.execute(query3, str(student.get("sid")))
         education = []
         for row3 in cursor3:
             education.append(dict(row3))
         student['education'] = education
 
-        query4 = "select * from experience where stu_sid =%s"
+        query4 = "select * from experience where stu_sid =%s order by fromdate DESC"
         cursor4 = conn.execute(query4, str(student.get("sid")))
         experience = []
         for row4 in cursor4:
             experience.append(dict(row4))
         student['experience'] = experience
 
-        query5 = "select * from skills where stu_sid =%s"
+        query5 = "select * from skills where stu_sid =%s order by proficiency DESC"
         cursor5 = conn.execute(query5, str(student.get("sid")))
         skills = []
         for row5 in cursor5:
@@ -58,17 +58,48 @@ def get_job(hid, conn, pid):
 def get_jobs(hid, conn, sortby):
     openjobpositions = []
     closedjobpositions = []
+    job_info = []
+    query3 = "select pid, application.status, count(*) from application inner join jobposition using(pid) group by pid,application.status,hr_hid having hr_hid=%s"
+    cursor3 = conn.execute(query3,(hid))
+    pos_countinfo = dict()
+    for row in cursor3:
+        #job_info.append(dict(row))
+        if row["pid"] not in pos_countinfo.keys():
+            pos_countinfo[row["pid"]] = dict()
+            pos_countinfo[row["pid"]][row["status"]] = row["count"]
+
     if sortby is not None:
         sorting_type = sortby
-        query1 = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='OPEN' and hr_hid = %s ORDER BY "+sorting_type
+        query1 = "select pid, todate, description, industry, fromdate, company_name, type, size, status from jobposition INNER JOIN company on com_cid=cid where hr_hid = %s ORDER BY "+sorting_type
         cursor1 = conn.execute(query1,(hid))
-        query2 = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='CLOSED' and hr_hid = %s ORDER BY " + sorting_type
-        cursor2 = conn.execute(query2, (hid))
+
     else:
-        cursor1 = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='OPEN' and hr_hid = %s",(hid))
-        cursor2 = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status='CLOSED' and hr_hid = %s",(hid))
+        cursor1 = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where hr_hid = %s",(hid))
+
     for row in cursor1:
-        openjobpositions.append(dict(row))
-    for row in cursor2:
-        closedjobpositions.append(dict(row))
+        pos = dict(row)
+        if (pos.get("status") == "OPEN"):
+            if pos['pid'] in pos_countinfo.keys():
+                mydict = pos_countinfo[pos['pid']]
+                if 'PENDING' in mydict:
+                    pos['pending'] = mydict['PENDING']
+                else:
+                    pos['pending'] = 0
+                if 'ACCEPT' in mydict:
+                    pos['accept'] = mydict['ACCEPT']
+                else:
+                    pos['accept'] = 0
+                if 'REJECT' in mydict:
+                    pos['reject'] = mydict['REJECT']
+                else:
+                    pos['reject'] = 0
+            else:
+                pos['accept'] = 0
+                pos['reject'] = 0
+                pos['pending'] = 0
+            openjobpositions.append(pos)
+        elif (pos.get("status") == "CLOSED"):
+            closedjobpositions.append(pos)
+
     return {'openpositions':openjobpositions, 'closedpositions':closedjobpositions}
+
