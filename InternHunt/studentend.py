@@ -1,7 +1,7 @@
 from __future__ import print_function
 
-def user_authenticate(username, password, conn):
-    cursor = conn.execute("SELECT * FROM student WHERE email = %s",username)
+def authenticate_student(username, password, conn):
+    cursor = conn.execute("SELECT * FROM student WHERE email = %s",(username))
     record = cursor.fetchone()
     if record is None:
         return (False)

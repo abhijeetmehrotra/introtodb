@@ -24,11 +24,13 @@ from flask import Flask, session
 from flask_session import Session
 from functools import wraps
 
-from studentend import user_authenticate, get_applications, get_jobpositions
+from studentend import authenticate_student, get_applications, get_jobpositions
 from studentend import get_student_education, delete_education, add_education
 from studentend import get_student_experience, delete_experience, add_experience
 from studentend import get_student_skill, delete_skill, add_skill
 from studentend import insert_application,insert_student
+
+from companyend import authenticate_company, get_hr_and_jobs
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -211,7 +213,7 @@ def studentlogin():
     print "Authenticating user"
     username = request.form["username"]
     password = request.form["password"]
-    auth = user_authenticate(username, password, g.conn)
+    auth = authenticate_student(username, password, g.conn)
     if auth[0]:
         """
             Store sid and all other stuff in session info
@@ -350,6 +352,43 @@ def studentapply():
                 return('Already applied<br/><a href="/student/dashboard">Go back to dashboard</a>', 200)
         else:
             return ('File not uploaded', 400)
+
+
+"""
+Implementation for Company end
+"""
+
+@app.route('/company/login', methods=["GET","POST"])
+@login_required(role='company')
+def companylogin():
+  if request.method == "GET":
+    return render_template("companylogin.html")
+  elif request.method == "POST":
+    print "Authenticating user"
+    username = request.form["username"]
+    password = request.form["password"]
+    auth = authenticate_company(username, password, g.conn)
+    if auth[0]:
+        """
+            Store sid and all other stuff in session info
+        """
+        session['cid'] = str(auth[1])
+        session['role'] = 'company'
+        return render_template("companydashboard.html")
+    else:
+        return redirect("/company/login")
+
+@app.route('/company/logout', methods=["GET"])
+def companylogout():
+    session.clear()
+    return redirect("/company/login")
+
+@app.route('/company/dashboard', methods=["GET"])
+@login_required(role='company')
+def companydashboard():
+  hr_and_jobs = get_hr_and_jobs(session["cid"], g.conn)
+  context = dict(data=hr_and_jobs)
+  return render_template("companydashboard.html", **context)
 
 if __name__ == "__main__":
   import click
