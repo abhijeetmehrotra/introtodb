@@ -20,7 +20,7 @@
         <li class="active"><a href="#">Dashboard</a></li>
       </ul>
         <ul class="nav navbar-nav navbar-right">
-      <li><a href="/student/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+      <li><a href="/company/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
     </ul>
     </div>
   </div>
@@ -31,17 +31,11 @@
 <table class="table table-striped">
     <tr>
         <th>HR</th>
-        <th></th>
     </tr>
     {% for person in hr %}
     <tr>
         <td>
-            {{ person.first_name }} {{ person.last_name }}
-        </td>
-        <td>
-            <form action="POST" action="deletehr" >
-                <input type="hidden" name="hid" />
-            </form>
+            {{ person.name }}
         </td>
     </tr>
     {% endfor %}
@@ -68,6 +62,33 @@
         <div class="row">
             <div class="col-sm-6"><b>From Date:</b> {{ job.fromdate }}</div>
             <div class="col-sm-6"><b>To Date:</b> {{ job.todate }}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3"><b>Pending:<span class="text-primary"> {{ job.pending }} </span></b></div>
+            <div class="col-sm-3"><b>Accepted:<span class="text-success"> {{ job.accept }} </span></b></div>
+            <div class="col-sm-3"><b>Rejected:<span class="text-danger"> {{ job.reject }} </span></b></div>
+            <div class="col-sm-3"><b>Total:<span> {{ job.total }} </span></b></div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-sm-1">
+                Change HR:
+            </div>
+            <div class="col-sm-8">
+            <form action="/company/changehrforjob" method="post">
+                <input type="hidden" name="pid" value="{{ job.pid }}">
+                <select name="hid">
+                    {% for person in hr %}
+                        {% if person.hid == job.hr_hid %}
+                            <option value="{{ person.hid }}" selected>{{ person.name }}</option>
+                        {% else %}
+                            <option value="{{ person.hid }}">{{ person.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <input type="submit" class="btn btn-primary" value="Change">
+            </form>
+            </div>
         </div>
     </div>
     {% endfor %}

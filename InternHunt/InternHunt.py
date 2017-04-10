@@ -33,7 +33,7 @@ from studentend import insert_application,insert_student
 from recruiterend import authenticate_recruiter, get_jobs, get_job
 
 
-from companyend import authenticate_company, get_hr_and_jobs
+from companyend import authenticate_company, get_hr_and_jobs, change_hr, firehrfromalljobs
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -322,13 +322,28 @@ def deleteskill():
 @app.route('/student/jobs', methods=["GET"])
 @login_required(role='student')
 def studentgetopenjobs():
-    sortby = request.args.get('sortby')
-    sorttype = request.args.get('sorttype')
-    if sortby in valid_sorting:
-        jobpositions = get_jobpositions(g.conn, sortby, sorttype)
-    else:
-        jobpositions = get_jobpositions(g.conn)
-    # print jobpositions
+    company=None
+    position=None
+    fromdate=None
+    todate=None
+    sorttype = None
+    sortby = None
+    if 'company' in request.args:
+        company = str(request.args["company"]).lower()
+    if 'position' in request.args:
+        position = str(request.args["position"]).lower()
+    if 'fromdate' in request.args:
+        fromdate = request.args["fromdate"]
+    if 'todate' in request.form:
+        todate = request.args["todate"]
+    if 'sortby' in request.args:
+        sortby = request.args["sortby"]
+    if 'sorttype' in request.args:
+        sorttype = request.args["sorttype"]
+
+
+    jobpositions = get_jobpositions(g.conn, position, company, fromdate, todate, sortby, sorttype)
+    #jobpositions=[]
     context = dict(data=jobpositions)
     return render_template("studentjobpositions.html", **context)
 
@@ -469,9 +484,18 @@ def companylogout():
 @app.route('/company/dashboard', methods=["GET"])
 @login_required(role='company')
 def companydashboard():
-  hr_and_jobs = get_hr_and_jobs(session["cid"], g.conn)
-  context = hr_and_jobs
-  return render_template("companydashboard.html", **context)
+    hr_and_jobs = get_hr_and_jobs(session["cid"], g.conn)
+    context = hr_and_jobs
+    return render_template("companydashboard.html", **context)
+
+@app.route('/company/changehrforjob', methods=["POST"])
+@login_required(role='company')
+def companychangehrforjob():
+    pid = request.form['pid']
+    hid = request.form['hid']
+    cid = session['cid']
+    change_hr(hid, pid, cid, g.conn)
+    return redirect("/company/dashboard")
 
 if __name__ == "__main__":
   import click

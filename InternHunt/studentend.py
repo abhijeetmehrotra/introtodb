@@ -20,20 +20,31 @@ def get_applications(userid, conn):
 
 job_sortname = {"position": "type", "company": "company_name", "startdate": "fromdate"}
 
-def get_jobpositions(conn, sortby = None, sorttype = None):
+def get_jobpositions(conn, position, company, fromdate, todate, sortby = None, sorttype = None):
     jobpositions = []
-    if sortby is not None:
+    params = ['OPEN']
+    query = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status=%s"
+    if position is not None and position != "":
+        print(position)
+        query = query + " and lower(type) LIKE %s"
+        params.append('%'+position+'%')
+    if company != None and company != "":
+        query = query + " and lower(company_name) LIKE %s"
+        params.append('%'+company+'%')
+    if fromdate != None and fromdate != "":
+        query = query + " and fromdate >= %s"
+        params.append(fromdate)
+    if todate != None and todate != "":
+        query = query + " and todate <= %s"
+        params.append(todate)
+    if sortby != None and sortby != "":
         if sortby in job_sortname.keys():
-            sorting_by = job_sortname[sortby]
-            if sorttype == "desc":
-                query = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status=%s ORDER BY "+sorting_by+" DESC"
+            if sorttype == 'desc':
+                query = query + " ORDER BY "+job_sortname[sortby]+" DESC"
             else:
-                query = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status=%s ORDER BY "+sorting_by+" ASC"
-        else:
-            query = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status=%s"
-        cursor = conn.execute(query, ("OPEN"))
-    else:
-        cursor = conn.execute("select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status=%s", ("OPEN"))
+                query = query + " ORDER BY "+job_sortname[sortby]+" ASC"
+
+    cursor = conn.execute(query, tuple(params))
     for row in cursor:
         jobpositions.append(dict(row))
     return jobpositions

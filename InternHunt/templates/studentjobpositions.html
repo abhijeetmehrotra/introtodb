@@ -8,6 +8,33 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="application/javascript">
+
+        function deleteEducation(university, degree, major, fromdate, sid) {
+            parameters = {
+                'university': university,
+                'degree':degree,
+                'major':major,
+                'fromdate':fromdate,
+                'sid':sid
+            };
+                $.ajax({
+                    url: 'deleteeducation',
+                    type: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify(parameters),
+                    success: function (data) {
+                        location.reload();
+                    },
+                    error: function (data) {
+                        console.log(data.responseText);
+                    }
+                })
+        }
+
+    </script>
+
+
     <style>
         .row-striped:nth-child(odd){
   background-color: #efefef;
@@ -43,23 +70,39 @@
 
 <div class="container-fluid" style="width: 95%">
     <h2>Open Positions</h2>
-    <div>
-        Sort by:
-        <div class="row">
-            <div class="col-sm-6">
-        Acsending
-        <a class="btn btn-primary" href="?sortby=position&sorttype=asc">Position</a>
-        <a class="btn btn-primary" href="?sortby=company&sorttype=asc">Company</a>
-        <a class="btn btn-primary" href="?sortby=startdate&sorttype=asc">Start Data</a>
-                </div>
-            <div class="col-sm-6">
-        Descending
-        <a class="btn btn-primary" href="?sortby=position&sorttype=desc">Position</a>
-        <a class="btn btn-primary" href="?sortby=company&sorttype=desc">Company</a>
-        <a class="btn btn-primary" href="?sortby=startdate&sorttype=desc">Start Data</a>
+    <h3>Search By:</h3>
+    <form method="get" action="">
+        <div class="row" style="margin: 4px">
+            <div class="col-sm-3">
+                Position:<input type="text" name="position">
             </div>
+            <div class="col-sm-3">
+                Company:<input type="text" name="company">
             </div>
-    </div>
+            <div class="col-sm-3">
+                Fromdate:<input type="date" name="fromdate">
+            </div>
+            <div class="col-sm-3">
+                Todate:<input type="date" name="todate">
+            </div>
+        </div>
+        <div class="row" style="margin: 4px">
+            <div class="col-sm-6">
+                Sort By:  <input checked type="radio" name="sortby" value="position"> Position
+                <input type="radio" name="sortby" value="company"> Company
+                <input type="radio" name="sortby" value="startdate"> Start Date
+            </div>
+            <div class="col-sm-4">
+                Sort Type:  <input checked type="radio" name="sorttype" value="asc"> Ascending <input type="radio" name="sorttype" value="desc"> Descending
+            </div>
+        </div>
+        <div class="row" style="margin: 4px">
+            <div class="col-sm-4">
+                <input class="btn btn-primary" type="submit" value="Search">
+            </div>
+        </div>
+
+    </form>
     <br>
     {% for position in data %}
         <div class="row row-striped" style="padding: 12px">

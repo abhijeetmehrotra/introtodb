@@ -18,3 +18,4 @@ htmlcov
 .coverage.*
 *,cover
 db_credentials.json
+aws_credentials.json
