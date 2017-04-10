@@ -39,7 +39,8 @@
 
     {% for position in data.openpositions %}
         <div class="row row-striped" style="padding: 12px">
-        {{ position.accept }},{{ position.reject }},{{ position.pending }}
+
+{#        {{ position.accept }},{{ position.reject }},{{ position.pending }}#}
             <div class="row">
                 <div class="col-sm-4">
                     Position: <span class="text-primary"><b>{{ position.type }}</b></span>
@@ -75,6 +76,13 @@
                     <a href="/recruiter/jobs?pid={{ position.pid }}" target="_blank" class="btn btn-primary">View</a>
                 </div>
             </div>
+            <div class="row">
+            <div class="col-sm-3"><b>Pending:<span class="text-primary"> {{ position.pending }} </span></b></div>
+            <div class="col-sm-3"><b>Accepted:<span class="text-success"> {{ position.accept }} </span></b></div>
+            <div class="col-sm-3"><b>Rejected:<span class="text-danger"> {{ position.reject }} </span></b></div>
+{#            <div class="col-sm-3"><b>Total:<span> {{ job.total }} </span></b></div>#}
+        </div>
+        <br>
         </div>
     {% endfor %}
 </div>
