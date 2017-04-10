@@ -23,7 +23,7 @@ job_sortname = {"position": "type", "company": "company_name", "startdate": "fro
 def get_jobpositions(conn, sortby = None, sorttype = None):
     jobpositions = []
     if sortby is not None:
-        if sorting_by in job_sortname.keys():
+        if sortby in job_sortname.keys():
             sorting_by = job_sortname[sortby]
             if sorttype == "desc":
                 query = "select pid, todate, description, industry, fromdate, company_name, type, size from jobposition INNER JOIN company on com_cid=cid where status=%s ORDER BY "+sorting_by+" DESC"
